@@ -164,7 +164,7 @@
             <div class="row">
                 <?php
                 // Fetch user orders
-                $ordersSql = "SELECT orderId, amount, orderDate FROM `orders` WHERE `userId` = ? AND `orderStatus` NOT 6 ORDER BY `orderDate` DESC";
+                $ordersSql = "SELECT orderId, amount, orderDate FROM `orders` WHERE `userId` = ? AND `orderStatus` != 6 ORDER BY `orderDate` DESC";
                 $stmt = $conn->prepare($ordersSql);
                 $stmt->bind_param("i", $userId);
                 $stmt->execute();
@@ -272,6 +272,7 @@
             });
         }
 
+
         function reflowLayout() {
             const container = document.getElementById('orders-container');
             const allCards = container.querySelectorAll('.order-card');
@@ -279,6 +280,7 @@
             function removeOrder(orderId) {
                 document.querySelector('[data-order-id="' + orderId + '"]').remove();
             }
+        }
     </script>
 
     <!-- Optional JavaScript -->

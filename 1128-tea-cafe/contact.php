@@ -1,5 +1,4 @@
-<?php include 'partials/_nav.php';
-$userId = $_SESSION["userId"]; ?>
+<?php include 'partials/_nav.php'; ?>
 <?php include 'partials/_dbconnect.php'; ?>
 <!doctype html>
 <html lang="en">
@@ -146,7 +145,8 @@ $userId = $_SESSION["userId"]; ?>
                     <div class="col-lg-8">
                       <h4 class="title">Contact Us</h4>
                     </div>
-                    <?php if ($loggedin) { ?>
+                    <?php if ($loggedin)
+                      $userId = $_SESSION["userId"]; { ?>
                       <div class="col-lg-4">
                         <div class="icon-badge-container mx-1" style="padding-left: 167px;">
                           <a href="#" data-toggle="modal" data-target="#adminReply"><i class="far fa-envelope icon-badge-icon"></i></a>
