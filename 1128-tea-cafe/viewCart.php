@@ -1,5 +1,6 @@
 <?php require 'partials/_nav.php'; ?>
 <?php include 'partials/_dbconnect.php'; ?>
+<?php include 'partials/_checkoutModal.php'; ?>
 
 <!doctype html>
 <html lang="en">
@@ -209,7 +210,6 @@
                 },
                 success: function(response) {
                     console.log("Cart updated!", response);
-                    location.reload();
                     updateOrderSummary();
                 },
                 error: function(error) {

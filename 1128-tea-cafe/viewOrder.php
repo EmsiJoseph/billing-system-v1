@@ -1,7 +1,6 @@
 <?php require 'partials/_nav.php'; ?>
 <?php include 'partials/_dbconnect.php';
-include 'partials/_orderItemModal.php';
-include 'partials/_orderStatusModal.php'; ?>
+?>
 
 <!doctype html>
 <html lang="en">
@@ -14,7 +13,7 @@ include 'partials/_orderStatusModal.php'; ?>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
     <title>Your Order</title>
     <link rel="icon" href="img/logo.jpg" type="image/x-icon">
     <style>
@@ -161,79 +160,36 @@ include 'partials/_orderStatusModal.php'; ?>
     <?php
     if ($loggedin) {
     ?>
+        <div class="container mt-4">
+            <div class="row">
+                <?php
+                // Fetch user orders
+                $ordersSql = "SELECT orderId, amount, orderDate FROM `orders` WHERE `userId` = ? AND `orderStatus` NOT 6 ORDER BY `orderDate` DESC";
+                $stmt = $conn->prepare($ordersSql);
+                $stmt->bind_param("i", $userId);
+                $stmt->execute();
+                $ordersResult = $stmt->get_result();
+                while ($order = $ordersResult->fetch_assoc()) {
+                    $timeLeft = 20 * 60 - (time() - strtotime($order['orderDate']));
+                    $timeLeft = max($timeLeft, 0); // Ensure the time left is not negative
+                    // Format the remaining time
+                    $minutes = floor($timeLeft / 60);
+                    $seconds = $timeLeft % 60;
+                    echo '
+                        <div class="col-md-6 mb-4">
+                            <div class="card order-card" data-order-id="' . htmlspecialchars($order['orderId']) . '">
+                                <div class="card-body">
+                                    <h5 class="card-title">' . htmlspecialchars($order['orderId']) . '</h5>
+                                    <p class="card-text countdown" data-time-left="' . $timeLeft . '"><strong>Time left to redeem</strong><br><span>' . sprintf("%02d:%02d", $minutes, $seconds) . '</span></p>
+                                </div>
+                                
+                            </div>
+                        </div>';
+                }
 
-        <div class="container">
-            <div class="table-wrapper" id="empty">
-                <div class="table-title">
-                    <div class="row">
-                        <div class="col-sm-4">
-                            <h2>Order <b>Details</b></h2>
-                        </div>
-                        <div class="col-sm-8">
-                            <a href="" class="btn btn-primary"><i class="material-icons">&#xE863;</i> <span>Refresh List</span></a>
-                        </div>
-                    </div>
-                </div>
-                <div class="table-responsive">
-
-                    <table class="table table-striped table-hover text-center">
-                        <thead>
-                            <tr>
-                                <th>Order Id</th>
-                                <th>Amount</th>
-                                <th>Payment Mode</th>
-                                <th>Order Date</th>
-                                <th>Status</th>
-                                <th>Items</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php
-                            $sql = "SELECT * FROM `orders` WHERE `userId`= $userId ORDER BY `orderId` DESC";
-                            $result = mysqli_query($conn, $sql);
-                            $counter = 0;
-                            while ($row = mysqli_fetch_assoc($result)) {
-                                $orderId = $row['orderId'];
-                                $amount = $row['amount'];
-                                $pickupTime = $row['pickupTime'];
-                                $paymentMode = $row['paymentMode'];
-                                if ($paymentMode == 0) {
-                                    $paymentMode = "Paymaya";
-                                } else if ($paymentMode == 1) {
-                                    $paymentMode = "Gcash";
-                                } else {
-                                    $paymentMode = "Cash";
-                                }
-                                $orderStatus = $row['orderStatus'];
-
-                                $counter++;
-
-                                $pickupDateTime = new DateTime($pickupTime);
-                                $friendlyFormat = $pickupDateTime->format('F j, Y, g:i a'); // Example output: "April 20, 2024, 12:24 pm"
-
-                                echo '<tr>
-                                    <td>' . $orderId . '</td>
-                                    <td>PHP ' . $amount . '.00</td>
-                                    <td>' . $paymentMode . '</td>
-                                    <td>' . $friendlyFormat . '</td>
-                                    <td><a href="#" data-toggle="modal" data-target="#orderStatus' . $orderId . '" class="view"><i class="material-icons">&#xE5C8;</i></a></td>
-                                    <td><a href="#" data-toggle="modal" data-target="#orderItem' . $orderId . '" class="view" title="View Details"><i class="material-icons">&#xE5C8;</i></a></td>
-                                    
-                                </tr>';
-                            }
-
-                            if ($counter == 0) {
-                            ?><script>
-                                    document.getElementById("empty").innerHTML = '<div class="col-md-12 my-5"><div class="card"><div class="card-body cart"><div class="col-sm-12 empty-cart-cls text-center"> <img src="https://i.imgur.com/dCdflKN.png" width="130" height="130" class="img-fluid mb-4 mr-3"><h3><strong>You have not ordered any items.</strong></h3><h4>Satisfy your cravings, order now!</h4> <a href="index.php" class="btn btn-primary cart-btn-transform m-3" data-abc="true">Browse our menu</a> </div></div></div></div>';
-                                </script> <?php
-                                        }
-                                            ?>
-                        </tbody>
-                    </table>
-                </div>
+                ?>
             </div>
         </div>
-
     <?php
     } else {
         echo '<div class="container" style="min-height : 610px;">
@@ -243,9 +199,87 @@ include 'partials/_orderStatusModal.php'; ?>
     }
     ?>
 
-    <?php
+    <?php require 'partials/_footer.php'; ?>
 
-    require 'partials/_footer.php'; ?>
+    <script>
+        function startCountdown(duration, display) {
+            var timer = duration,
+                minutes, seconds;
+            setInterval(function() {
+                minutes = parseInt(timer / 60, 10);
+                seconds = parseInt(timer % 60, 10);
+
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                display.textContent = minutes + ":" + seconds;
+
+                if (--timer < 0) {
+                    timer = duration;
+                    // Handle expiration of the countdown
+                }
+            }, 1000);
+        }
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelectorAll('.countdown').forEach(function(countdown) {
+                var orderId = countdown.closest('.order-card').getAttribute('data-order-id');
+                var span = countdown.querySelector('span');
+                var timeLeft = parseInt(countdown.getAttribute('data-time-left'), 10);
+
+                if (isNaN(timeLeft)) {
+                    console.error('Invalid time left value');
+                    span.textContent = "00:00";
+                    return;
+                }
+
+                var timerId = setInterval(function() {
+                    if (timeLeft <= 0) {
+                        clearInterval(timerId);
+                        span.textContent = "00:00";
+                        countdown.innerHTML = '<button onclick="removeOrder(\'' + orderId + '\')">Remove</button>';
+                        cancelOrder(orderId); // This will call the back-end to update the status to canceled
+                        return;
+                    }
+
+                    // Update countdown
+                    var minutes = parseInt(timeLeft / 60, 10);
+                    var seconds = timeLeft % 60;
+                    span.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    timeLeft--;
+                }, 1000);
+            });
+        });
+
+        function cancelOrder(orderId) {
+            $.ajax({
+                url: '/partials/_cancelOrder.php',
+                type: 'POST',
+                data: {
+                    orderId: orderId
+                },
+                success: function(response) {
+                    const card = document.querySelector(`[data-order-id='${orderId}']`);
+                    if (card) {
+                        card.remove();
+                        reflowLayout();
+                    }
+                    console.log("Order canceled", response);
+                },
+                error: function(error) {
+                    console.error("Failed to cancel order", error);
+                }
+            });
+        }
+
+        function reflowLayout() {
+            const container = document.getElementById('orders-container');
+            const allCards = container.querySelectorAll('.order-card');
+
+            function removeOrder(orderId) {
+                document.querySelector('[data-order-id="' + orderId + '"]').remove();
+            }
+    </script>
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->

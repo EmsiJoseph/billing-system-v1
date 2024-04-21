@@ -18,22 +18,14 @@ function generateOrderId($conn)
 
 function handleCheckout($conn, $userId)
 {
-    $pickupPersonName = $_POST["pickupPersonName"];
-    $pickupPersonPhone = $_POST["pickupPersonPhone"];
-    $userTime = $_POST["pickupTime"];
     $paymentMode = $_POST["paymentMode"];
     $totalPrice = $_POST["totalPrice"];
-
-    // Combine the current date with the user provided time
-    date_default_timezone_set('Asia/Manila');
-    $currentDate = date("Y-m-d"); // Get the current date in YYYY-MM-DD format
-    $pickupDateTime = $currentDate . ' ' . $userTime . ':00'; // Combine with the time input
 
     $conn->begin_transaction();
     try {
         $orderId = generateOrderId($conn);
-        $insertOrderStmt = $conn->prepare("INSERT INTO `orders` (orderId, userId, amount, paymentMode, orderStatus, orderDate, pickupPersonName, pickupPersonPhone, pickupTime) VALUES (?, ?, ?, ?, '0', NOW(), ?, ?, ?)");
-        $insertOrderStmt->bind_param("sisssss", $orderId, $userId, $totalPrice, $paymentMode, $pickupPersonName, $pickupPersonPhone, $pickupDateTime);
+        $insertOrderStmt = $conn->prepare("INSERT INTO `orders` (orderId, userId, amount, paymentMode, orderStatus, orderDate) VALUES (?, ?, ?, ?, '0', NOW())");
+        $insertOrderStmt->bind_param("sisi", $orderId, $userId, $totalPrice, $paymentMode);
         $insertOrderStmt->execute();
 
         // Commit transaction only if all operations succeed

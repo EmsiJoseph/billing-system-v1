@@ -56,7 +56,7 @@ if ($row = $result->fetch_assoc()) {
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="checkoutModalLabel">Pickup Details</h5>
+                <h5 class="modal-title" id="checkoutModalLabel">Confirm Checkout</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -64,18 +64,7 @@ if ($row = $result->fetch_assoc()) {
             <div class="modal-body">
                 <form action="\partials\_manageCart.php" method="POST">
                     <!-- User details inputs -->
-                    <div class="form-group">
-                        <label for="pickupPersonName">Pickup Person's Name:</label>
-                        <input type="text" class="form-control" id="pickupPersonName" name="pickupPersonName" placeholder="Enter name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="pickupPersonPhone">Phone Number:</label>
-                        <input type="tel" class="form-control" id="pickupPersonPhone" name="pickupPersonPhone" placeholder="09xxxxxxxxx" required pattern="[0][9][0-9]{9}">
-                    </div>
-                    <div class="form-group">
-                        <label for="pickupTime">Pickup Time:</label>
-                        <input type="time" class="form-control" id="pickupTime" name="pickupTime" required>
-                    </div>
+
                     <!-- Payment Mode Selection -->
                     <label>Payment Mode:</label>
                     <div class="payment-modes-container">
@@ -99,6 +88,8 @@ if ($row = $result->fetch_assoc()) {
                     <input type="hidden" id="paymentMode" name="paymentMode" value="">
                     <input type="hidden" name="totalPrice" value="<?php echo htmlspecialchars($totalPrice); ?>">
             </div>
+            <p class="text-center"><i class="fas fa-clock"></i> Claim at a store within 20 minutes.</p>
+
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                 <button type="submit" name="checkout" class="btn btn-primary">Confirm Order</button>

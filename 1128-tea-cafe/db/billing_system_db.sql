@@ -224,7 +224,7 @@ CREATE TABLE `sitedetail` (
 
 -- Dumping data for table `sitedetail`
 INSERT INTO `sitedetail` (`systemName`, `email`, `contact1`, `contact2`, `address`) VALUES
-('1128 Tea & Café', 'contact@1128teaandcafe.com', 1234567890, NULL, '123 Tea Street, Beverage City');
+('1128 Tea & Cafe', 'contact@1128teaandcafe.com', 1234567890, NULL, '123 Tea Street, Beverage City');
 
 
 -- Dumping data for table `users`
