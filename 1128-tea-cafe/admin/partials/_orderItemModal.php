@@ -1,7 +1,7 @@
 <?php
+include 'partials/_dbconnect.php';  // Make sure your database connection is correct
 
-include 'partials/_dbconnect.php';
-
+// Function to get order status description
 function getOrderStatusDescription($status)
 {
     $statuses = [
@@ -16,24 +16,24 @@ function getOrderStatusDescription($status)
     return $statuses[$status] ?? 'Unknown Status';
 }
 
-$itemModalSql = "SELECT o.orderId, o.orderDate, o.amount, oi.prodId, oi.size, o.orderStatus, oi.itemQuantity, p.prodName, ps.price 
-                 FROM `orders` o
-                 JOIN `orderitems` oi ON o.orderId = oi.orderId
-                 JOIN `prod` p ON oi.prodId = p.prodId
-                 JOIN `prod_sizes` ps ON oi.prodId = ps.prodId AND oi.size = ps.size
-                 WHERE o.userId = $userId
+// Fetch all necessary order details along with user details
+$itemModalSql = "SELECT o.orderId, o.userId, o.orderDate, o.amount, o.orderStatus, oi.prodId, oi.itemQuantity, p.prodName, ps.price FROM orders o
+                 JOIN orderitems oi ON o.orderId = oi.orderId
+                 JOIN prod p ON oi.prodId = p.prodId
+                 JOIN prod_sizes ps ON oi.prodId = ps.prodId AND oi.size = ps.size
                  ORDER BY o.orderDate DESC";
+
 $itemModalResult = mysqli_query($conn, $itemModalSql);
-$orders = []; // Store orders by ID for modal generation
+$orders = [];
 
 while ($itemModalRow = mysqli_fetch_assoc($itemModalResult)) {
     $orderId = $itemModalRow['orderId'];
-    $orderStatus = $itemModalRow['orderStatus'];
     if (!isset($orders[$orderId])) {
         $orders[$orderId] = [
             'orderId' => $orderId,
+            'userId' => $itemModalRow['userId'],
             'orderDate' => $itemModalRow['orderDate'],
-            'orderStatus' => $orderStatus,
+            'orderStatus' => $itemModalRow['orderStatus'],
             'amount' => $itemModalRow['amount'],
             'items' => []
         ];
@@ -44,78 +44,19 @@ while ($itemModalRow = mysqli_fetch_assoc($itemModalResult)) {
 foreach ($orders as $order) {
     $orderId = $order['orderId'];
     $orderStatus = getOrderStatusDescription($order['orderStatus']);
-?>
-
-    <!-- Order Items Modal -->
-    <div class="modal fade" id="orderItem<?php echo $orderId; ?>" tabindex="-1" role="dialog" aria-labelledby="orderItemLabel<?php echo $orderId; ?>" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="orderItemLabel<?php echo $orderId; ?>">Order Details - #<?php echo $orderId; ?></h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <h6>Order Date: <?php echo date('M d, Y', strtotime($order['orderDate'])); ?></h6>
-                    <h6>Order Status: <?php echo $orderStatus; ?></h6>
-                    <h6>Total Amount: PHP <?php echo number_format($order['amount'], 2); ?></h6>
-                    <div class=" table-responsive">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Item</th>
-                                    <th class="text-center">Quantity</th>
-                                    <th class="text-center">Price</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($order['items'] as $item) { ?>
-                                    <tr>
-                                        <td class="align-middle">
-                                            <div class="d-flex align-items-center">
-                                                <img src="img/prod-<?php echo $item['prodId']; ?>.jpg" alt="" width="40" class="img-fluid rounded shadow-sm mr-2">
-                                                <span><?php echo $item['prodName']; ?></span>
-                                            </div>
-                                        </td>
-                                        <td class="align-middle text-center"><?php echo $item['itemQuantity']; ?> pcs.</td>
-                                        <td class="align-middle text-center">PHP <?php echo number_format($item['price'], 2); ?></td>
-                                    </tr>
-                                <?php } ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <?php if (!in_array($order['orderStatus'], [5, 6])) : ?>
-                        <button onclick='cancelOrder(<?php echo $orderId; ?>)' class='btn btn-danger'>Cancel Order</button>
-                    <?php endif; ?>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        function cancelOrder(orderId) {
-            if (confirm("Are you sure you want to cancel this order?")) {
-                $.ajax({
-                    url: '/partials/_cancelOrder.php',
-                    type: 'POST',
-                    data: {
-                        orderId: orderId
-                    },
-                    success: function(response) {
-                        alert("Order cancelled successfully.");
-                        location.reload();
-                    },
-                    error: function() {
-                        alert("Error cancelling order.");
-                    }
-                });
-            }
-        }
-    </script>
-<?php
+    // Modal HTML setup
+    echo "<div class='modal fade' id=orderItem<?php echo $orderId; ?>' tabindex='-1' role='dialog' aria-labelledby='orderItemLabel$orderId' aria-hidden='true'>";
+    echo "<div class='modal-dialog modal-dialog-centered modal-lg' role='document'>";
+    echo "<div class='modal-content'>";
+    echo "<div class='modal-header'>";
+    echo "<h5 class='modal-title' id='orderItemLabel$orderId'>Order Details - #$orderId</h5>";
+    echo "<button type='button' class='close' data-dismiss='modal' aria-label='Close'>";
+    echo "<span aria-hidden='true'>&times;</span>";
+    echo "</button></div>";
+    echo "<div class='modal-body'>";
+    // Body Content
+    echo "</div>";
+    echo "<div class='modal-footer'>";
+    echo "<button type='button' class='btn btn-secondary' data-dismiss='modal'>Close</button>";
+    echo "</div></div></div></div>";
 }
-?>

@@ -144,15 +144,15 @@
             </div>
         </div>
         <div class="table-responsive">
-            <table class=" table table-striped table-hover text-center" id="NoOrder">
+            <table class="table table-striped table-hover text-center" id="NoOrder">
                 <thead style="background-color: rgb(111 202 203);">
                     <tr>
                         <th>Order Id</th>
                         <th>User Email</th>
                         <th>Amount</th>
                         <th>Payment Mode</th>
-                        <th style="min-width: 110px;">Order Date</th>
-                        <th style="min-width: 110px;">Details</th>
+                        <th>Order Date</th>
+                        <th>Details</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -163,18 +163,15 @@
                         $orderId = htmlspecialchars($row['orderId']);
                         $email = htmlspecialchars($row['email']);
                         $amount = htmlspecialchars($row['amount']);
-                        $paymentMode = ($row['paymentMode'] == 0) ? "Cash" : "Online";
+                        $paymentMode = ($row['paymentMode'] == 2) ? "Cash" : "Online";
                         $orderDate = date('F j, Y', strtotime($row['orderDate']));
-                        echo "<tr onclick='openModal(\"$orderId\"))'>
+                        echo "<tr>
                             <td>$orderId</td>
                             <td>$email</td>
                             <td>PHP $amount.00</td>
                             <td>$paymentMode</td>
                             <td>$orderDate</td>
-                           <td>
-                                <button onclick='openModal(\"$orderId\")' class='btn btn-info'>View</button>
-                            </td>
-
+                            <td><button class='btn btn-info' data-toggle='modal' data-target='#orderItem$orderId'>View</button></td>
                           </tr>";
                     }
                     ?>
@@ -184,7 +181,7 @@
     </div>
 </div>
 
-
+<?php include 'partials/_orderItemModal.php'; ?>
 <script>
     function openModal(orderId) {
         $('#orderItem' + orderId).modal('show');

@@ -7,7 +7,6 @@ if (isset($_SESSION['adminloggedin']) && $_SESSION['adminloggedin'] == true) {
     $adminloggedin = false;
     $userId = 0;
 }
-include 'partials/_orderItemModal.php';
 
 if ($adminloggedin) {
 ?>
