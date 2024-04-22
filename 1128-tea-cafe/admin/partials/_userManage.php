@@ -32,7 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </script>";
         } else {
             if (($password == $cpassword)) {
-                $hash = password_hash($password, PASSWORD_DEFAULT);
+                $hash = crypt($password, PASSWORD_DEFAULT);
                 $sql = "INSERT INTO `users` ( `nickname`, `firstName`, `lastName`, `email`, `phone`, `userType`, `password`, `joinDate`) VALUES ('$nickname', '$firstName', '$lastName', '$email', '$phone', '$userType', '$hash', current_timestamp())";
                 $result = mysqli_query($conn, $sql);
                 if ($result) {

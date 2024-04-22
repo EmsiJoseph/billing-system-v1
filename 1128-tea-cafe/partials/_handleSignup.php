@@ -10,17 +10,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $phone = $_POST["phone"];
     $password = $_POST["password"];
     $cpassword = $_POST["cpassword"];
-    // Check whether this nickname exists
-    $existSql = "SELECT * FROM `users` WHERE nickname = '$nickname'";
+    $existSql = "SELECT * FROM `users` WHERE email = '$email'";
     $result = mysqli_query($conn, $existSql);
     $numExistRows = mysqli_num_rows($result);
     if ($numExistRows > 0) {
-        $showError = "Nickname already exists";
+        $showError = "Email already exists";
         header("Location: /index.php?signupsuccess=false&error=$showError");
     } else {
         if (($password == $cpassword)) {
-            $hash = password_hash($password, PASSWORD_DEFAULT);
-            $sql = "INSERT INTO `users` ( `nickname`, `firstName`, `lastName`, `email`, `phone`, `userType`, `password`, `joinDate`) VALUES ('$nickname', '$firstName', '$lastName', '$email', '$phone', 0, '$hash', current_timestamp())";
+            $hash = crypt($password, PASSWORD_DEFAULT);
+            $sql = "INSERT INTO `users` ( `nickname`, `firstName`, `lastName`, `email`, `phone`, `userType`, `password`, `joinDate`) VALUES ('$nickname', '$firstName', '$lastName', '$email', '$phone', '0', '$hash', current_timestamp())";
             $result = mysqli_query($conn, $sql);
             if ($result) {
                 $showAlert = true;

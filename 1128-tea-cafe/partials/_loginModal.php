@@ -11,7 +11,7 @@
       <div class="modal-body">
         <form action="partials/_handleLogin.php" method="post">
           <div class="text-left my-2">
-            <b><label for="nickname">Email</label></b>
+            <b><label for="email">Email</label></b>
             <input class="form-control" id="loginemail" name="loginemail" placeholder="Enter your email" type="email" required>
           </div>
           <div class="text-left my-2">

@@ -16,18 +16,9 @@
                                 <label class="control-label">Category Description: </label>
                                 <input type="text" class="form-control" name="desc" required>
                             </div>
-                            <div class="form-group">
-                                <label for="image" class="control-label">Image</label>
-                                <input type="file" name="image" id="image" accept=".jpg" class="form-control" required style="border:none;">
-                                <small id="Info" class="form-text text-muted mx-3">Please .jpg file upload.</small>
-                            </div>
                         </div>
                         <div class="card-footer">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <button type="submit" name="createCategory" class="btn btn-sm btn-primary col-sm-3 offset-md-4"> Create </button>
-                                </div>
-                            </div>
+                            <button type="submit" name="createCategory" class="btn btn-primary">Create</button>
                         </div>
                     </div>
                 </form>
@@ -42,14 +33,13 @@
                             <thead style="background-color: rgb(111 202 203);">
                                 <tr>
                                     <th class="text-center" style="width:7%;">Id</th>
-                                    <th class="text-center">Img</th>
                                     <th class="text-center" style="width:58%;">Category Detail</th>
                                     <th class="text-center" style="width:18%;">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php
-                                $sql = "SELECT * FROM `categories`";
+                                $sql = "SELECT * FROM `categories` ORDER BY categoryId DESC";
                                 $result = mysqli_query($conn, $sql);
                                 while ($row = mysqli_fetch_assoc($result)) {
                                     $catId = $row['categoryId'];
@@ -58,7 +48,6 @@
 
                                     echo '<tr>
                                         <td class="text-center"><b>' . $catId . '</b></td>
-                                        <td><img src="/1128-tea-cafe/img/card-' . $catId . '.jpg" alt="image for this Category" width="150px" height="150px"></td>
                                         <td>
                                             <p>Name : <b>' . $catName . '</b></p>
                                             <p>Description : <b class="truncate">' . $catDesc . '</b></p>
@@ -105,20 +94,6 @@ while ($catRow = mysqli_fetch_assoc($catResult)) {
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form action="partials/_categoryManage.php" method="post" enctype="multipart/form-data">
-                        <div class="text-left my-2 row" style="border-bottom: 2px solid #dee2e6;">
-                            <div class="form-group col-md-8">
-                                <b><label for="image">Image</label></b>
-                                <input type="file" name="catimage" id="catimage" accept=".jpg" class="form-control" required style="border:none;" onchange="document.getElementById('itemPhoto').src = window.URL.createObjectURL(this.files[0])">
-                                <small id="Info" class="form-text text-muted mx-3">Please .jpg file upload.</small>
-                                <input type="hidden" id="catId" name="catId" value="<?php echo $catId; ?>">
-                                <button type="submit" class="btn btn-success my-1" name="updateCatPhoto">Update Img</button>
-                            </div>
-                            <div class="form-group col-md-4">
-                                <img src="/1128-tea-cafe/img/card-<?php echo $catId; ?>.jpg" id="itemPhoto" name="itemPhoto" alt="Category image" width="100" height="100">
-                            </div>
-                        </div>
-                    </form>
                     <form action="partials/_categoryManage.php" method="post">
                         <div class="text-left my-2">
                             <b><label for="name">Name</label></b>

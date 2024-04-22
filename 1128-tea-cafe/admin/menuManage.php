@@ -1,15 +1,15 @@
 <div class="container-fluid" style="margin-top:98px">
-	
+
 	<div class="col-lg-12">
 		<div class="row">
 			<!-- FORM Panel -->
 			<div class="col-md-4">
-			<form action="partials/_menuManage.php" method="post" enctype="multipart/form-data">
-				<div class="card mb-3">
-					<div class="card-header" style="background-color: rgb(111 202 203);">
-						Create New Item
-				  	</div>
-					<div class="card-body">
+				<form action="partials/_menuManage.php" method="post" enctype="multipart/form-data">
+					<div class="card">
+						<div class="card-header" style="background-color: rgb(111 202 203);">
+							Create New Item
+						</div>
+						<div class="card-body">
 							<div class="form-group">
 								<label class="control-label">Name: </label>
 								<input type="text" class="form-control" name="name" required>
@@ -18,42 +18,53 @@
 								<label class="control-label">Description: </label>
 								<textarea cols="30" rows="3" class="form-control" name="description" required></textarea>
 							</div>
-                            <div class="form-group">
-								<label class="control-label">Price</label>
-								<input type="number" class="form-control" name="price" required min="1">
-							</div>	
 							<div class="form-group">
 								<label class="control-label">Category: </label>
-								<select name="categoryId" id="categoryId" class="custom-select browser-default" required>
-								<option hidden disabled selected value>None</option>
-                                <?php
-                                    $catsql = "SELECT * FROM `categories`"; 
-                                    $catresult = mysqli_query($conn, $catsql);
-                                    while($row = mysqli_fetch_assoc($catresult)){
-                                        $catId = $row['categorieId'];
-                                        $catName = $row['categorieName'];
-                                        echo '<option value="' .$catId. '">' .$catName. '</option>';
-                                    }
-                                ?>
+								<select class="form-control" name="categoryId" required>
+									<option value="" disabled selected>Select Category</option>
+									<?php
+									$catsql = "SELECT categoryId, categoryName FROM categories";
+									$catresult = mysqli_query($conn, $catsql);
+									while ($catRow = mysqli_fetch_assoc($catresult)) {
+										echo '<option value="' . $catRow['categoryId'] . '">' . $catRow['categoryName'] . '</option>';
+									}
+									?>
 								</select>
 							</div>
-							
 							<div class="form-group">
-								<label for="image" class="control-label">Image</label>
-								<input type="file" name="image" id="image" accept=".jpg" class="form-control" required style="border:none;">
-								<small id="Info" class="form-text text-muted mx-3">Please .jpg file upload.</small>
+								<label class="control-label">Sizes and Prices:</label>
+								<div class="input-group mb-3">
+									<input type="text" class="form-control" placeholder="Large" name="sizes[]">
+									<input type="number" class="form-control" placeholder="45" name="prices[]">
+									<div class="input-group-append">
+										<button class="btn btn-outline-secondary" type="button" onclick="addSize()">Add Size</button>
+									</div>
+								</div>
+								<div id="additionalSizes"></div>
+								<script>
+									function addSize() {
+										let html = `<div class="input-group mb-3">
+                                        <input type="text" class="form-control" placeholder="Size" name="sizes[]">
+                                        <input type="number" class="form-control" placeholder="Price" name="prices[]">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-outline-danger" type="button" onclick="removeSize(this)">Remove</button>
+                                        </div>
+                                    </div>`;
+										document.getElementById('additionalSizes').insertAdjacentHTML('beforeend', html);
+									}
+
+									function removeSize(button) {
+										button.closest('.input-group').remove();
+									}
+								</script>
 							</div>
-					</div>
-							
-					<div class="card-footer">
-						<div class="row">
-							<div class="mx-auto">
-								<button type="submit" name="createItem" class="btn btn-sm btn-primary"> Create </button>
-							</div>
+
+						</div>
+						<div class="card-footer">
+							<button type="submit" name="createItem" class="btn btn-primary">Create</button>
 						</div>
 					</div>
-				</div>
-			</form>
+				</form>
 			</div>
 			<!-- FORM Panel -->
 
@@ -64,122 +75,146 @@
 						<table class="table table-bordered table-hover mb-0">
 							<thead style="background-color: rgb(111 202 203);">
 								<tr>
-									<th class="text-center" style="width:7%;">Cat. Id</th>
-									<th class="text-center">Img</th>
-									<th class="text-center" style="width:58%;">Item Detail</th>
-									<th class="text-center" style="width:18%;">Action</th>
+									<th class="text-center">Name</th>
+									<th class="text-center">Description</th>
+									<th class="text-center">Category</th>
+									<th class="text-center">Size</th>
+									<th class="text-center">Price</th>
+									<th class="text-center">Date Added</th>
+									<th class="text-center">Action</th>
 								</tr>
 							</thead>
 							<tbody>
-                            <?php
-                                $sql = "SELECT * FROM `prod`";
-                                $result = mysqli_query($conn, $sql);
-                                while($row = mysqli_fetch_assoc($result)){
-                                    $prodId = $row['prodId'];
-                                    $prodName = $row['prodName'];
-                                    $prodPriceM = $row['prodPriceM'];
-                                    $prodPriceL = $row['prodPriceL'];
-                                    $prodDesc = $row['prodDesc'];
-                                    $prodCategoryId = $row['prodCategoryId'];
-
-                                    echo '<tr>
-                                            <td class="text-center">' .$prodCategoryId. '</td>
-                                            <td>
-                                                <img src="/1128-tea-cafe/img/prod-'.$prodId. '.jpg" alt="image for this item" width="150px" height="150px">
-                                            </td>
-                                            <td>
-                                                <p>Name : <b>' .$prodName. '</b></p>
-                                                <p>Description : <b class="truncate">' .$prodDesc. '</b></p>
-                                                <p>Price : <b>' .$prodPriceM. '</b></p>
-                                                <p>Price : <b>' .$prodPriceL. '</b></p>
-                                            </td>
-                                            <td class="text-center">
-												<div class="row mx-auto" style="width:112px">
-													<button class="btn btn-sm btn-primary" type="button" data-toggle="modal" data-target="#updateItem' .$prodId. '">Edit</button>
-													<form action="partials/_menuManage.php" method="POST">
-														<button name="removeItem" class="btn btn-sm btn-danger" style="margin-left:9px;">Delete</button>
-														<input type="hidden" name="prodId" value="'.$prodId. '">
-													</form>
-												</div>
-                                            </td>
-                                        </tr>';
-                                }
-                            ?>
+								<?php
+								$sql = "SELECT p.prodId, p.prodName, p.prodDesc, p.prodPubDate, ps.size, ps.price, c.categoryName 
+                            FROM prod p
+                            JOIN prod_sizes ps ON p.prodId = ps.prodId
+                            JOIN categories c ON p.prodCategoryId = c.categoryId
+                            ORDER BY p.prodPubDate DESC";
+								$result = mysqli_query($conn, $sql);
+								while ($row = mysqli_fetch_assoc($result)) {
+									echo "<tr>
+                            <td>{$row['prodName']}</td>
+                            <td>{$row['prodDesc']}</td>
+							<td>{$row['categoryName']}</td>
+                            <td>{$row['size']}</td>
+                            <td>PHP {$row['price']}.00</td>
+                            <td>" . date('Y-m-d', strtotime($row['prodPubDate'])) . "</td>
+							<td class='text-center'>
+									<div class='dropdown'>
+										<i class='fas fa-ellipsis-v' id='dropdownMenuButton{$row['prodId']}' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false' style='cursor: pointer;'></i>
+										<div class='dropdown-menu' aria-labelledby='dropdownMenuButton{$row['prodId']}'>
+											<a class='dropdown-item' href='#' data-toggle='modal' data-target='#updateItem{$row['prodId']}'>Edit</a>
+											<a class='dropdown-item text-danger' href='#' onclick='confirmDeletion(\"{$row['prodId']}\")'>Remove</a>
+										</div>
+									</div>
+								</td>
+                          </tr>";
+								}
+								?>
 							</tbody>
 						</table>
 					</div>
 				</div>
+
 			</div>
 			<!-- Table Panel -->
 		</div>
-	</div>	
-</div>
-
-<?php 
-    $prodsql = "SELECT * FROM `prod`";
-    $prodResult = mysqli_query($conn, $prodsql);
-    while($prodRow = mysqli_fetch_assoc($prodResult)){
-        $prodId = $prodRow['prodId'];
-        $prodName = $prodRow['prodName'];
-        $prodPriceM = $row['prodPriceM'];
-        $prodPriceL = $row['prodPriceL'];
-        $prodCategoryId = $prodRow['prodCategoryId'];
-        $prodDesc = $prodRow['prodDesc'];
-?>
-
-<!-- Modal -->
-<div class="modal fade" id="updateItem<?php echo $prodId; ?>" tabindex="-1" role="dialog" aria-labelledby="updateItem<?php echo $prodId; ?>" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header" style="background-color: rgb(111 202 203);">
-        <h5 class="modal-title" id="updateItem<?php echo $prodId; ?>">Item Id: <?php echo $prodId; ?></h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-	  	<form action="partials/_menuManage.php" method="post" enctype="multipart/form-data">
-		    <div class="text-left my-2 row" style="border-bottom: 2px solid #dee2e6;">
-		   		<div class="form-group col-md-8">
-					<b><label for="image">Image</label></b>
-					<input type="file" name="itemimage" id="itemimage" accept=".jpg" class="form-control" required style="border:none;" onchange="document.getElementById('itemPhoto').src = window.URL.createObjectURL(this.files[0])">
-					<small id="Info" class="form-text text-muted mx-3">Please .jpg file upload.</small>
-					<input type="hidden" id="prodId" name="prodId" value="<?php echo $prodId; ?>">
-					<button type="submit" class="btn btn-success my-1" name="updateItemPhoto">Update Img</button>
-				</div>
-				<div class="form-group col-md-4">
-					<img src="/1128-tea-cafe/img/prod-<?php echo $prodId; ?>.jpg" id="itemPhoto" name="itemPhoto" alt="item image" width="100" height="100">
-				</div>
-			</div>
-		</form>
-		<form action="partials/_menuManage.php" method="post">
-            <div class="text-left my-2">
-                <b><label for="name">Name</label></b>
-                <input class="form-control" id="name" name="name" value="<?php echo $prodName; ?>" type="text" required>
-            </div>
-			<div class="text-left my-2 row">
-				<div class="form-group col-md-6">
-                	<b><label for="price">Price</label></b>
-                	<input class="form-control" id="price" name="price" value="<?php echo $prodPriceM; ?>" type="number" min="1" required>
-                	<input class="form-control" id="price" name="price" value="<?php echo $prodPriceL; ?>" type="number" min="1" required>
-				</div>
-				<div class="form-group col-md-6">
-					<b><label for="catId">Category Id</label></b>
-                	<input class="form-control" id="catId" name="catId" value="<?php echo $prodCategoryId; ?>" type="number" min="1" required>
-				</div>
-            </div>
-            <div class="text-left my-2">
-                <b><label for="desc">Description</label></b>
-                <textarea class="form-control" id="desc" name="desc" rows="2" required minlength="6"><?php echo $prodDesc; ?></textarea>
-            </div>
-            <input type="hidden" id="prodId" name="prodId" value="<?php echo $prodId; ?>">
-            <button type="submit" class="btn btn-success" name="updateItem">Update</button>
-        </form>
-      </div>
-    </div>
-  </div>
+	</div>
 </div>
 
 <?php
-	}
+$prodsql = "SELECT p.prodId, p.prodName, p.prodDesc, p.prodPubDate, c.categoryName, ps.size, ps.price
+            FROM prod p
+            JOIN prod_sizes ps ON p.prodId = ps.prodId
+            JOIN categories c ON p.prodCategoryId = c.categoryId
+            ORDER BY p.prodPubDate DESC";
+$prodResult = mysqli_query($conn, $prodsql);
+while ($prodRow = mysqli_fetch_assoc($prodResult)) {
+	$prodId = $prodRow['prodId'];
+	$prodName = $prodRow['prodName'];
+	$prodDesc = $prodRow['prodDesc'];
+	$categoryName = $prodRow['categoryName'];
+	$size = $prodRow['size'];
+	$price = $prodRow['price'];
+?>
+
+	<!-- Modal -->
+	<div class="modal fade" id="updateItem<?php echo $prodId; ?>" tabindex="-1" role="dialog" aria-labelledby="updateItem<?php echo $prodId; ?>" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header" style="background-color: rgb(111 202 203);">
+					<h5 class="modal-title" id="updateItem<?php echo $prodId; ?>">Item Id: <?php echo $prodId; ?></h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form action="partials/_menuManage.php" method="post">
+						<div class="text-left my-2">
+							<b><label for="name">Name</label></b>
+							<input class="form-control" id="name" name="name" value="<?php echo $prodName; ?>" type="text" required>
+						</div>
+						<div class="text-left my-2">
+							<b><label for="desc">Description</label></b>
+							<textarea class="form-control" id="desc" name="desc" rows="2" required><?php echo $prodDesc; ?></textarea>
+						</div>
+						<div class="text-left my-2">
+							<b><label for="size">Size</label></b>
+							<input class="form-control" id="size" name="size" value="<?php echo $size; ?>" type="text" required>
+						</div>
+						<div class="text-left my-2">
+							<b><label for="price">Price</label></b>
+							<input class="form-control" id="price" name="price" value="<?php echo $price; ?>" type="number" min="1" required>
+						</div>
+						<div class="text-left my-2">
+							<b><label for="category">Category</label></b>
+							<select class="form-control" id="category" name="category">
+								<?php
+								$catsql = "SELECT * FROM categories";
+								$catResult = mysqli_query($conn, $catsql);
+								while ($catRow = mysqli_fetch_assoc($catResult)) {
+									echo "<option value='{$catRow['categoryId']}'" . ($catRow['categoryName'] == $categoryName ? " selected" : "") . ">{$catRow['categoryName']}</option>";
+								}
+								?>
+							</select>
+						</div>
+						<br>
+						<input type="hidden" id="prodId" name="prodId" value="<?php echo $prodId; ?>">
+						<button type="submit" class="btn btn-success" name="updateItem">Update</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<script>
+		function confirmDeletion(prodId) {
+			if (confirm('Are you sure you want to delete this item?')) {
+				// Implement the deletion logic here, or submit a form
+				const form = document.createElement('form');
+				form.method = 'post';
+				form.action = 'partials/_menuManage.php';
+
+				const inputId = document.createElement('input');
+				inputId.type = 'hidden';
+				inputId.name = 'prodId';
+				inputId.value = prodId;
+
+				const inputAction = document.createElement('input');
+				inputAction.type = 'hidden';
+				inputAction.name = 'removeItem';
+				inputAction.value = '1';
+
+				form.appendChild(inputId);
+				form.appendChild(inputAction);
+				document.body.appendChild(form);
+				form.submit();
+			}
+		}
+	</script>
+
+<?php
+}
 ?>

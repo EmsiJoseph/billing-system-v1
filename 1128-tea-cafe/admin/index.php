@@ -53,12 +53,13 @@ if ($adminloggedin) {
         <script src="https://unpkg.com/bootstrap-show-password@1.2.1/dist/bootstrap-show-password.min.js"></script>
         <script src="assetsForSideBar/js/main.js"></script>
 
+
     </body>
 
     </html>
 
 <?php
 } else {
-    header("location: /1128-tea-cafe/admin/login.php");
+    header("location: admin/login.php");
 }
 ?>

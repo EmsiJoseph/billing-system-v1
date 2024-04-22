@@ -1,5 +1,5 @@
 <?php
-$server = "db";  // Or use "docker.for.win.localhost" or "docker.for.mac.localhost" as needed
+$server = "db";
 $username = "root";
 $password = "root";
 $database = "billing-system-db";

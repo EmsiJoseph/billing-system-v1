@@ -1,5 +1,4 @@
 <?php
-// Turn on error reporting for debugging
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
@@ -9,7 +8,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST["loginemail"];
     $password = $_POST["loginpassword"];
 
-    // Modify your SQL query to also select the nickname column
     $sql = $conn->prepare("SELECT userId, email, password, nickname FROM users WHERE email = ?");
     $sql->bind_param("s", $email);
     $sql->execute();

@@ -6,8 +6,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST["email"];
     $password = $_POST["password"];
 
-    // Use prepared statements to prevent SQL injection
-    $sql = $conn->prepare("SELECT userId, password, userType FROM users WHERE email = ?");
+    $sql = $conn->prepare("SELECT userId, password, userType, nickname FROM users WHERE email = ?");
     $sql->bind_param("s", $email);
     $sql->execute();
     $result = $sql->get_result();
@@ -20,6 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['adminloggedin'] = true;
             $_SESSION['adminemail'] = $email;
             $_SESSION['adminuserId'] = $row['userId'];
+            $_SESSION['adminnickname'] = $row['nickname'];
             header("location: /admin/index.php?loginsuccess=true");
             exit();
         } else {

@@ -40,7 +40,7 @@
 
           </div>
         </div>
-        <a href="partials/partials/_logout.php" class="nav__link">
+        <a href="/admin/partials/_logout.php" class="nav__link">
           <i class='bx bx-log-out nav__icon'></i>
           <span class="nav__name">Log Out</span>
         </a>
