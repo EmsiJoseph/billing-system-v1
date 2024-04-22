@@ -5,9 +5,11 @@ include 'partials/_dbconnect.php';
 $id = $_GET['catid'];
 $sql = "SELECT * FROM `categories` WHERE categoryId = $id";
 $result = mysqli_query($conn, $sql);
-$catname = "Category"; // Default title if category not found
+$catname = "Category";
+$catdesc = "Category description";
 if ($row = mysqli_fetch_assoc($result)) {
-    $catname = $row['categoryName']; // Store the category name
+    $catname = $row['categoryName'];
+    $catdesc = $row['categoryDesc'];
 }
 ?>
 
@@ -115,6 +117,9 @@ if ($row = mysqli_fetch_assoc($result)) {
     <div class="container my-3" id="cont">
         <div class="col-lg-4 text-center bg-light my-3 category-title-container" style="margin: auto;">
             <h2 class="text-center"><span id="catTitle"><?php echo htmlspecialchars($catname); ?></span></h2>
+        </div>
+        <div class="col-lg-4 text-center bg-light my-3 category-title-container" style="margin: auto;">
+            <p class="text-center"><span id="catDesc"><?php echo htmlspecialchars($catdesc); ?></span></p>
         </div>
         &nbsp;
         <div class="row">

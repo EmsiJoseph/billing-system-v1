@@ -6,9 +6,6 @@ $systemName = "Default System Name";
 $categories = [];
 $userId = 0;
 $count = 0;
-// $nickname = isset($_SESSION['loggedin']) && $_SESSION['loggedin'] && isset($_SESSION['nickname']) ? $_SESSION['nickname'] : 'User';
-
-// Start session
 if (
   session_status() === PHP_SESSION_NONE
 ) {
@@ -83,14 +80,12 @@ if ($loggedin) {
       <li class="nav-item">
         <a class="nav-link" href="about.php">About</a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" href="contact.php">Contact Us</a>
-      </li>
+
     </ul>
-    <form method="get" action="/1128-tea-cafe/search.php" class="form-inline my-2 my-lg-0 mx-3">
+    <!-- <form method="get" action="/1128-tea-cafe/search.php" class="form-inline my-2 my-lg-0 mx-3">
       <input class="form-control mr-sm-2" type="search" name="search" id="search" placeholder="Search" aria-label="Search" required>
       <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-    </form>
+    </form> -->
     <a href="viewCart.php" class="btn btn-secondary mx-2" title="My Cart">
       <i class="fas fa-shopping-cart"></i> Cart (<span id="cartCount"><?= $count ?></span>)
     </a>

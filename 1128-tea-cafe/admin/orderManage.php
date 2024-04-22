@@ -1,4 +1,5 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
 <style>
     .tooltip.show {
         top: -62px !important;
@@ -73,11 +74,11 @@
     }
 
     table.table-striped tbody tr:nth-of-type(odd) {
-        /* background-color: #fcfcfc; */
+        background-color: #fcfcfc;
     }
 
     table.table-striped.table-hover tbody tr:hover {
-        /* background: #f5f5f5; */
+        background: #f5f5f5;
     }
 
     table.table th i {
@@ -134,7 +135,7 @@
         <div class="table-title" style="border-radius: 14px;">
             <div class="row">
                 <div class="col-sm-6">
-                    <h2>Order <b>Details</b></h2>
+                    <h2>Order Details</h2>
                 </div>
                 <div class="col-sm-6">
                     <a href="orderManage.php" class="btn btn-primary"><i class="material-icons">&#xE863;</i> <span>Refresh List</span></a>
@@ -142,64 +143,48 @@
                 </div>
             </div>
         </div>
-        <table class="table table-striped table-hover text-center" id="NoOrder">
-            <thead style="background-color: rgb(111 202 203);">
-                <tr>
-                    <th>Order Id</th>
-                    <th>User Email</th>
-                    <th>Amount</th>
-                    <th>Payment Mode</th>
-                    <th>Order Date</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php
-                $sql = "SELECT orders.*, users.email FROM orders JOIN users ON orders.userId = users.userId";
-                $result = mysqli_query($conn, $sql);
-                while ($row = mysqli_fetch_assoc($result)) {
-                    $orderId = htmlspecialchars($row['orderId']);
-                    $email = htmlspecialchars($row['email']);
-                    $amount = htmlspecialchars($row['amount']);
-                    $paymentMode = ($row['paymentMode'] == 0) ? "Cash" : "Online";
-                    $orderDate = date('F j, Y', strtotime($row['orderDate']));
-                    echo "<tr onclick='openModal($orderId)'>
+        <div class="table-responsive">
+            <table class=" table table-striped table-hover text-center" id="NoOrder">
+                <thead style="background-color: rgb(111 202 203);">
+                    <tr>
+                        <th>Order Id</th>
+                        <th>User Email</th>
+                        <th>Amount</th>
+                        <th>Payment Mode</th>
+                        <th style="min-width: 110px;">Order Date</th>
+                        <th style="min-width: 110px;">Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    $sql = "SELECT orders.*, users.email FROM orders JOIN users ON orders.userId = users.userId";
+                    $result = mysqli_query($conn, $sql);
+                    while ($row = mysqli_fetch_assoc($result)) {
+                        $orderId = htmlspecialchars($row['orderId']);
+                        $email = htmlspecialchars($row['email']);
+                        $amount = htmlspecialchars($row['amount']);
+                        $paymentMode = ($row['paymentMode'] == 0) ? "Cash" : "Online";
+                        $orderDate = date('F j, Y', strtotime($row['orderDate']));
+                        echo "<tr onclick='openModal(\"$orderId\"))'>
                             <td>$orderId</td>
                             <td>$email</td>
-                            <td>PHP $amount</td>
+                            <td>PHP $amount.00</td>
                             <td>$paymentMode</td>
                             <td>$orderDate</td>
+                           <td>
+                                <button onclick='openModal(\"$orderId\")' class='btn btn-info'>View</button>
+                            </td>
+
                           </tr>";
-                }
-                ?>
-            </tbody>
-        </table>
+                    }
+                    ?>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
-}
-
-$stmt->close();
-} else {
-echo '<tr>
-    <td colspan="7" class="text-center">Error fetching order details.</td>
-</tr>';
-}
-
-?>
-</tbody>
-</table>
-</div>
-</div>
-
-<?php
-include 'partials/_orderItemModal.php';
-?>
 
 
-<script>
-    $(document).ready(function() {
-        $('[data-toggle="tooltip"]').tooltip();
-    });
-</script>
 <script>
     function openModal(orderId) {
         $('#orderItem' + orderId).modal('show');
