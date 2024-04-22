@@ -210,6 +210,7 @@
                 },
                 success: function(response) {
                     console.log("Cart updated!", response);
+                    location.reload();
                     updateOrderSummary();
                 },
                 error: function(error) {

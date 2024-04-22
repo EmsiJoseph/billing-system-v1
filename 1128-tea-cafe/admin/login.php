@@ -78,7 +78,7 @@
                 <div class="card-body">
                     <form action="partials/_handleLogin.php" method="post">
                         <div class="form-group">
-                            <label for="nickname" class="control-label"><b>Email</b></label>
+                            <label for="email" class="control-label"><b>Email</b></label>
                             <input type="text" id="email" name="email" class="form-control">
                         </div>
                         <div class="form-group">

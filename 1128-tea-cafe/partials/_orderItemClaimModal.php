@@ -87,9 +87,7 @@ foreach ($orders as $order) {
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <?php if (!in_array($order['orderStatus'], [5, 6])) : ?>
-                        <button onclick='cancelOrder(<?php echo $orderId; ?>)' class='btn btn-danger'>Cancel Order</button>
-                    <?php endif; ?>
+                    <button onclick='cancelOrder({$orderId})' class='btn btn-danger'>Cancel Order</button>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
             </div>
@@ -107,7 +105,7 @@ foreach ($orders as $order) {
                     },
                     success: function(response) {
                         alert("Order cancelled successfully.");
-                        location.reload();
+                        location.reload(); // Refresh to update the UI
                     },
                     error: function() {
                         alert("Error cancelling order.");

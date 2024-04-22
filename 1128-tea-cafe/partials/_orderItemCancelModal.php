@@ -87,35 +87,13 @@ foreach ($orders as $order) {
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <?php if (!in_array($order['orderStatus'], [5, 6])) : ?>
-                        <button onclick='cancelOrder(<?php echo $orderId; ?>)' class='btn btn-danger'>Cancel Order</button>
-                    <?php endif; ?>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <script>
-        function cancelOrder(orderId) {
-            if (confirm("Are you sure you want to cancel this order?")) {
-                $.ajax({
-                    url: '/partials/_cancelOrder.php',
-                    type: 'POST',
-                    data: {
-                        orderId: orderId
-                    },
-                    success: function(response) {
-                        alert("Order cancelled successfully.");
-                        location.reload();
-                    },
-                    error: function() {
-                        alert("Error cancelling order.");
-                    }
-                });
-            }
-        }
-    </script>
+
 <?php
 }
 ?>

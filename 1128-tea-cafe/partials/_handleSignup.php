@@ -20,7 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         if (($password == $cpassword)) {
             $hash = password_hash($password, PASSWORD_DEFAULT);
-            $sql = "INSERT INTO `users` ( `nickname`, `firstName`, `lastName`, `email`, `phone`, `password`, `joinDate`) VALUES ('$nickname', '$firstName', '$lastName', '$email', '$phone', '$hash', current_timestamp())";
+            $sql = "INSERT INTO `users` ( `nickname`, `firstName`, `lastName`, `email`, `phone`, `userType`, `password`, `joinDate`) VALUES ('$nickname', '$firstName', '$lastName', '$email', '$phone', 0, '$hash', current_timestamp())";
             $result = mysqli_query($conn, $sql);
             if ($result) {
                 $showAlert = true;

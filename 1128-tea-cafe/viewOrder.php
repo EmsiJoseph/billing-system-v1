@@ -1,6 +1,7 @@
 <?php require 'partials/_nav.php'; ?>
-<?php include 'partials/_dbconnect.php';
-?>
+<?php include 'partials/_dbconnect.php'; ?>
+<?php include 'partials/_orderItemModal.php'; ?>
+
 
 <!doctype html>
 <html lang="en">
@@ -151,120 +152,173 @@
             counter-increment: section;
             content: counter(section);
         }
+
+        .card.order-card {
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .card.order-card:hover {
+            background-color: #f8f9fa;
+        }
     </style>
 
 </head>
 
 <body>
+    <?php if ($loggedin) {
+        function updateOrderStatus($conn, $userId)
+        {
+            $currentTime = time();
+            $stmt = $conn->prepare("SELECT orderId, orderDate FROM orders WHERE userId = ? AND orderStatus NOT IN (6)");
+            $stmt->bind_param("i", $userId);
+            $stmt->execute();
+            $result = $stmt->get_result();
 
-    <?php
-    if ($loggedin) {
-    ?>
-        <div class="container mt-4">
-            <div class="row">
-                <?php
-                // Fetch user orders
-                $ordersSql = "SELECT orderId, amount, orderDate FROM `orders` WHERE `userId` = ? AND `orderStatus` != 6 ORDER BY `orderDate` DESC";
-                $stmt = $conn->prepare($ordersSql);
-                $stmt->bind_param("i", $userId);
-                $stmt->execute();
-                $ordersResult = $stmt->get_result();
-                while ($order = $ordersResult->fetch_assoc()) {
-                    $timeLeft = 20 * 60 - (time() - strtotime($order['orderDate']));
-                    $timeLeft = max($timeLeft, 0); // Ensure the time left is not negative
-                    // Format the remaining time
-                    $minutes = floor($timeLeft / 60);
-                    $seconds = $timeLeft % 60;
-                    echo '
-                        <div class="col-md-6 mb-4">
-                            <div class="card order-card" data-order-id="' . htmlspecialchars($order['orderId']) . '">
-                                <div class="card-body">
-                                    <h5 class="card-title">' . htmlspecialchars($order['orderId']) . '</h5>
-                                    <p class="card-text countdown" data-time-left="' . $timeLeft . '"><strong>Time left to redeem</strong><br><span>' . sprintf("%02d:%02d", $minutes, $seconds) . '</span></p>
-                                </div>
-                                
-                            </div>
-                        </div>';
+            while ($order = $result->fetch_assoc()) {
+                $orderTime = strtotime($order['orderDate']);
+                $timePassed = $currentTime - $orderTime;
+
+                if ($timePassed > 1200) { // 20 minutes * 60 seconds
+                    $updateStmt = $conn->prepare("UPDATE orders SET orderStatus = 6 WHERE orderId = ?");
+                    $updateStmt->bind_param("s", $order['orderId']);
+                    $updateStmt->execute();
                 }
-
-                ?>
-            </div>
-        </div>
-    <?php
-    } else {
-        echo '<div class="container" style="min-height : 610px;">
-        <div class="alert alert-info my-3">
-            <font style="font-size:22px"><center>Check your Order. You need to <strong><a class="alert-link" data-toggle="modal" data-target="#loginModal">Login</a></strong></center></font>
-        </div></div>';
+            }
+        }
+        updateOrderStatus($conn, $userId);
     }
     ?>
 
+    <?php if ($loggedin) : ?>
+
+        <div class="container mt-4">
+            <h1 class="text-center">My Orders</h1>
+            <ul class="nav nav-tabs">
+                <li class="nav-item">
+                    <a class="nav-link active" data-toggle="tab" href="#claimable">Claimable</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#cancelled">Cancelled</a>
+                </li>
+            </ul>
+
+            <div class="tab-content">
+                <br>
+                <div id="claimable" class="tab-pane fade show active">
+                    <div class="row">
+                        <?php
+                        $stmt = $conn->prepare("SELECT orderId, amount, orderDate, UNIX_TIMESTAMP(orderDate) AS timestamp FROM orders WHERE userId = ? AND orderStatus NOT IN (6) ORDER BY orderDate DESC");
+                        $stmt->bind_param("i", $userId);
+                        $stmt->execute();
+                        $result = $stmt->get_result();
+                        $currentTime = time();
+                        while ($order = $result->fetch_assoc()) {
+                            $timeLeft = max(0, 20 * 60 - ($currentTime - $order['timestamp']));
+                            $minutes = floor($timeLeft / 60);
+                            $seconds = $timeLeft % 60;
+                            echo "
+                            <div class='col-md-6 mb-4'>
+                                <div class='card order-card' data-toggle='modal' data-target='#orderItem" . htmlspecialchars($order['orderId']) . "'>
+                                    <div class='card-body'>
+                                        <h5 class='card-title'>Order #" . htmlspecialchars($order['orderId']) . "</h5>
+                                        <p class='card-text'>Total: PHP " . number_format($order['amount'], 2) . "</p>
+                                        <p class='card-text countdown' data-time-left='$timeLeft'><strong>Time left to claim:</strong> <span>$minutes:$seconds</span></p>
+                                    </div>
+                                </div>
+                            </div>";
+                        }
+                        if ($result->num_rows === 0) {
+                            echo '
+                        <div class="text-center w-100">
+                            <p>No claimable orders found.</p>
+                            <p><a href="/viewCart.php" class="btn btn-primary">Checkout at Cart</a>  or  <a href="/index.php" class="btn btn-primary">Browse Menu</a></p>
+                        </div>';
+                        }
+                        ?>
+                    </div>
+
+                </div>
+                <div id="cancelled" class="tab-pane fade">
+                    <div class="row">
+                        <?php
+                        $stmt = $conn->prepare("SELECT orderId, amount, orderDate, orderStatus FROM orders WHERE userId = ? AND orderStatus IN (5, 6) ORDER BY orderDate DESC");
+                        $stmt->bind_param("i", $userId);
+                        $stmt->execute();
+                        $result = $stmt->get_result();
+                        while ($order = $result->fetch_assoc()) {
+                            $statusMessage = ($order['orderStatus'] == 5) ? 'Order Denied' : 'Order Cancelled';
+                            echo "
+                            <div class='col-md-6 mb-4'>
+                                <div class='card order-card' data-toggle='modal' data-target='#orderItem" . htmlspecialchars($order['orderId']) . "'>
+                                    <div class='card-body'>
+                                        <h5 class='card-title'>Order #" . htmlspecialchars($order['orderId']) . "</h5>
+                                        <p class='card-text'>Ordered on " . date('M d, Y', strtotime($order['orderDate'])) . "</p>
+                                        <p class='card-text'>Total: PHP " . number_format($order['amount'], 2) . "</p>
+                                        <p class='card-text text-muted'>" . $statusMessage . "</p>
+                                    </div>
+                                </div>
+                            </div>";
+                        }
+
+                        ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <?php else : ?>
+        <div class="container" style="min-height: 610px;">
+            <div class="alert alert-info my-3">
+                <strong>You need to <a href="#" data-toggle="modal" data-target="#loginModal">Login</a> to view your orders.</strong>
+            </div>
+        </div>
+    <?php endif; ?>
+
+
     <?php require 'partials/_footer.php'; ?>
 
+
     <script>
-        function startCountdown(duration, display) {
-            var timer = duration,
-                minutes, seconds;
-            setInterval(function() {
-                minutes = parseInt(timer / 60, 10);
-                seconds = parseInt(timer % 60, 10);
-
-                minutes = minutes < 10 ? "0" + minutes : minutes;
-                seconds = seconds < 10 ? "0" + seconds : seconds;
-
-                display.textContent = minutes + ":" + seconds;
-
-                if (--timer < 0) {
-                    timer = duration;
-                    // Handle expiration of the countdown
-                }
-            }, 1000);
-        }
-
-        document.addEventListener('DOMContentLoaded', (event) => {
-            document.querySelectorAll('.countdown').forEach(function(countdown) {
+        document.addEventListener('DOMContentLoaded', function() {
+            var countdownElements = document.querySelectorAll('.countdown');
+            countdownElements.forEach(function(countdown) {
                 var orderId = countdown.closest('.order-card').getAttribute('data-order-id');
+                var timeLeft = parseInt(countdown.dataset.timeLeft, 10);
                 var span = countdown.querySelector('span');
-                var timeLeft = parseInt(countdown.getAttribute('data-time-left'), 10);
-
-                if (isNaN(timeLeft)) {
-                    console.error('Invalid time left value');
-                    span.textContent = "00:00";
-                    return;
-                }
 
                 var timerId = setInterval(function() {
                     if (timeLeft <= 0) {
                         clearInterval(timerId);
-                        span.textContent = "00:00";
-                        countdown.innerHTML = '<button onclick="removeOrder(\'' + orderId + '\')">Remove</button>';
-                        cancelOrder(orderId); // This will call the back-end to update the status to canceled
-                        return;
+                        span.textContent = '00:00';
+                        // Automatically update order status to cancelled if not already done
+                        if (!countdown.closest('.order-card').classList.contains('cancelled')) {
+                            cancelOrder(orderId, true); // Pass true to indicate automatic cancellation
+                        }
+                    } else {
+                        var minutes = Math.floor(timeLeft / 60);
+                        var seconds = timeLeft % 60;
+                        span.textContent = minutes.toString().padStart(2, '0') + ':' + seconds.toString().padStart(2, '0');
+                        timeLeft--;
                     }
-
-                    // Update countdown
-                    var minutes = parseInt(timeLeft / 60, 10);
-                    var seconds = timeLeft % 60;
-                    span.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-                    timeLeft--;
                 }, 1000);
             });
         });
 
-        function cancelOrder(orderId) {
+
+        function cancelOrder(orderId, automatic = false) {
             $.ajax({
                 url: '/partials/_cancelOrder.php',
                 type: 'POST',
                 data: {
-                    orderId: orderId
+                    orderId: orderId,
+                    automatic: automatic
                 },
                 success: function(response) {
                     const card = document.querySelector(`[data-order-id='${orderId}']`);
                     if (card) {
-                        card.remove();
-                        reflowLayout();
+                        moveToCancelledTab(card);
+                        console.log("Order canceled", response);
                     }
-                    console.log("Order canceled", response);
                 },
                 error: function(error) {
                     console.error("Failed to cancel order", error);
@@ -272,16 +326,59 @@
             });
         }
 
-
-        function reflowLayout() {
-            const container = document.getElementById('orders-container');
-            const allCards = container.querySelectorAll('.order-card');
-
-            function removeOrder(orderId) {
-                document.querySelector('[data-order-id="' + orderId + '"]').remove();
+        function moveToCancelledTab(card) {
+            const cancelledTab = document.querySelector('#cancelled .row');
+            if (cancelledTab) {
+                card.querySelector('.countdown').remove();
+                cancelledTab.appendChild(card);
             }
         }
+
+        function pollOrderStatusUpdates(orderId) {
+            setInterval(function() {
+                $.ajax({
+                    url: '/partials/_checkOrderStatus.php',
+                    type: 'POST',
+                    data: {
+                        orderId: orderId
+                    },
+                    success: function(response) {
+                        var status = response.orderStatus;
+                        var statusText = response.statusText;
+                        var orderCard = document.querySelector(`[data-order-id='${orderId}']`);
+                        if (orderCard) {
+                            var statusElement = orderCard.querySelector('.order-status');
+                            if (!statusElement) {
+                                statusElement = document.createElement('p');
+                                statusElement.classList.add('order-status');
+                                orderCard.querySelector('.card-body').appendChild(statusElement);
+                            }
+                            statusElement.textContent = `Status: ${statusText}`;
+
+                            if (![0, 1, 2, 3, 4].includes(status)) {
+                                var countdownElement = orderCard.querySelector('.countdown');
+                                if (countdownElement) {
+                                    countdownElement.remove();
+                                }
+                            }
+                        }
+                    },
+                    error: function(error) {
+                        console.error("Failed to check order status", error);
+                    }
+                });
+            }, 5000);
+        }
+
+        // Call this function for each order on page load
+        document.querySelectorAll('.order-card').forEach(function(card) {
+            var orderId = card.getAttribute('data-order-id');
+            pollOrderStatusUpdates(orderId);
+        });
     </script>
+
+
+
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->

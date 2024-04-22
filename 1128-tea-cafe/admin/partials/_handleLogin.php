@@ -1,31 +1,33 @@
 <?php
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    include '_sessionStart.php';
     include '_dbconnect.php';
+
     $email = $_POST["email"];
     $password = $_POST["password"];
 
-    $sql = "Select * from users where email='$email'";
-    $result = mysqli_query($conn, $sql);
-    $num = mysqli_num_rows($result);
+    // Use prepared statements to prevent SQL injection
+    $sql = $conn->prepare("SELECT userId, password, userType FROM users WHERE email = ?");
+    $sql->bind_param("s", $email);
+    $sql->execute();
+    $result = $sql->get_result();
+    $num = $result->num_rows;
+
     if ($num == 1) {
-        $row = mysqli_fetch_assoc($result);
-        $userType = $row['userType'];
-        if ($userType == 1) {
-            $userId = $row['id'];
-            if (password_verify($password, $row['password'])) {
-                session_start();
-                $_SESSION['adminloggedin'] = true;
-                $_SESSION['adminemail'] = $email;
-                $_SESSION['adminuserId'] = $userId;
-                header("location: /1128-tea-cafe/admin/index.php?loginsuccess=true");
-                exit();
-            } else {
-                header("location: /1128-tea-cafe/admin/login.php?loginsuccess=false");
-            }
+        $row = $result->fetch_assoc();
+        if ($row['userType'] == 1 && password_verify($password, $row['password'])) {
+            session_start();
+            $_SESSION['adminloggedin'] = true;
+            $_SESSION['adminemail'] = $email;
+            $_SESSION['adminuserId'] = $row['userId'];
+            header("location: /admin/index.php?loginsuccess=true");
+            exit();
         } else {
-            header("location: /1128-tea-cafe/admin/login.php?loginsuccess=false");
+            header("location: /admin/login.php?loginsuccess=false&error=Invalid credentials");
+            exit();
         }
     } else {
-        header("location: /1128-tea-cafe/admin/login.php?loginsuccess=false");
+        header("location: /admin/login.php?loginsuccess=false&error=Invalid credentials");
+        exit();
     }
 }

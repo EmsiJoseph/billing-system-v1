@@ -1,5 +1,7 @@
-<?php include 'partials/_nav.php'; ?>
+<?php include 'partials/_nav.php';
+$userId = '' ?>
 <?php include 'partials/_dbconnect.php'; ?>
+
 <!doctype html>
 <html lang="en">
 
@@ -145,8 +147,8 @@
                     <div class="col-lg-8">
                       <h4 class="title">Contact Us</h4>
                     </div>
-                    <?php if ($loggedin)
-                      $userId = $_SESSION["userId"]; { ?>
+
+                    <?php if ($loggedin) { ?>
                       <div class="col-lg-4">
                         <div class="icon-badge-container mx-1" style="padding-left: 167px;">
                           <a href="#" data-toggle="modal" data-target="#adminReply"><i class="far fa-envelope icon-badge-icon"></i></a>
@@ -156,6 +158,7 @@
                     <?php } ?>
                   </div>
                   <?php
+                  $userId = $_SESSION['userId'];
                   $passSql = "SELECT * FROM users WHERE userId='$userId'";
                   $passResult = mysqli_query($conn, $passSql);
                   $passRow = mysqli_fetch_assoc($passResult);
@@ -269,6 +272,7 @@
             </thead>
             <tbody>
               <?php
+              $userId = $_SESSION['userId'];
               $sql = "SELECT * FROM `contactreply` WHERE `userId`='$userId'";
               $result = mysqli_query($conn, $sql);
               $count = 0;
@@ -319,6 +323,7 @@
             </thead>
             <tbody>
               <?php
+              $userId = $_SESSION['userId'];
               $sql = "SELECT * FROM `contact` WHERE `userId`='$userId'";
               $result = mysqli_query($conn, $sql);
               $count = 0;

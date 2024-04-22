@@ -78,7 +78,7 @@ if ($loggedin) {
         </div>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="viewOrder.php">Your Orders</a>
+        <a class="nav-link" href="viewOrder.php">Orders</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="about.php">About</a>

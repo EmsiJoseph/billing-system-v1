@@ -1,19 +1,17 @@
 <?php
-include '_dbconnect.php';
+// Connection setup
+require '_dbconnect.php';
 
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['orderId'])) {
-    $userId = $_SESSION['userId'];
-    $orderId = $_POST['orderId'];
-    $cancelStatus = 6; // Assuming 6 is the status code for canceled orders
+if (isset($_POST['orderId']) && is_numeric($_POST['orderId'])) {
+    $orderId = intval($_POST['orderId']);
 
-    // Prepare SQL to update the order status
-    $stmt = $conn->prepare("UPDATE `orders` SET `orderStatus` = ? WHERE `orderId` = ? AND `userI` = ?");
-    $stmt->bind_param("is", $cancelStatus, $orderId);
-    $result = $stmt->execute();
-
-    if ($result) {
-        echo json_encode(['status' => 'success', 'message' => 'Order canceled']);
+    $stmt = $conn->prepare("UPDATE orders SET orderStatus = 6 WHERE orderId = ?");
+    $stmt->bind_param("i", $orderId);
+    if ($stmt->execute()) {
+        echo "Order #$orderId cancelled successfully.";
     } else {
-        echo json_encode(['status' => 'error', 'message' => 'Failed to cancel order']);
+        echo "Error cancelling order.";
     }
+} else {
+    echo "Invalid request.";
 }

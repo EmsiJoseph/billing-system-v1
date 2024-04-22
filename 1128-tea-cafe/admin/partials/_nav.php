@@ -4,7 +4,7 @@
       </div>
 
       <div class="header__img">
-        <img src="assetsForSideBar/img/perfil.jpg" alt="">
+        <img src="../img/profilePic.jpg" alt="">
       </div>
     </header>
 

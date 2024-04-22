@@ -28,7 +28,7 @@
                         $result = mysqli_query($conn, $sql);
 
                         while ($row = mysqli_fetch_assoc($result)) {
-                            $Id = $row['id'];
+                            $Id = $row['userId'];
                             $nickname = $row['nickname'];
                             $firstName = $row['firstName'];
                             $lastName = $row['lastName'];
@@ -142,7 +142,7 @@
 $usersql = "SELECT * FROM `users`";
 $userResult = mysqli_query($conn, $usersql);
 while ($userRow = mysqli_fetch_assoc($userResult)) {
-    $Id = $userRow['id'];
+    $userId = $userRow['id'];
     $name = $userRow['nickname'];
     $firstName = $userRow['firstName'];
     $lastName = $userRow['lastName'];
