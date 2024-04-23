@@ -29,7 +29,7 @@
             right: 0;
             width: 40%;
             height: calc(100%);
-            background: white;
+            background: #EFEFEF;
             display: flex;
             align-items: center;
         }
@@ -39,30 +39,20 @@
             left: 0;
             width: 60%;
             height: calc(100%);
-            background: #00000061;
+            background: #FFFFFF;
             display: flex;
             align-items: center;
+        }
+
+        #login-left img {
+            width: 100%;
+            height: auto;
+            opacity: 0.7;
         }
 
         #login-right .card {
-            margin: auto
-        }
-
-        .logo {
             margin: auto;
-            font-size: 8rem;
-            background: white;
-            border-radius: 50% 50%;
-            height: 29vh;
-            width: 13vw;
-            display: flex;
-            align-items: center;
-        }
 
-        .logo img {
-            height: 80%;
-            width: 80%;
-            margin: auto
         }
     </style>
 </head>
@@ -74,7 +64,12 @@
         </div>
         <div id="login-right">
             <div class="card col-md-8">
-                <div class="card-body">
+                <br>
+                <div class="card-header" style="background-color: rgb(999 999 999);">
+                    <h1>Admin Login</h1>
+                    <h5>1128 Tea & Cafe</h5>
+                </div>
+                <div class=" card-body">
                     <form action="partials/_handleLogin.php" method="post">
                         <div class="form-group">
                             <label for="email" class="control-label"><b>Email</b></label>

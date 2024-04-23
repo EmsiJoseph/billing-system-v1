@@ -1,4 +1,3 @@
-<!-- Login Modal -->
 <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModal" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -17,6 +16,11 @@
           <div class="text-left my-2">
             <b><label for="password">Password</label></b>
             <input class="form-control" id="loginpassword" name="loginpassword" placeholder="Enter your password" type="password" required data-toggle="password">
+          </div>
+
+          <div class="form-group form-check">
+            <input type="checkbox" class="form-check-input" id="termsAndConditions" required>
+            <label class="form-check-label" for="termsAndConditions">I agree to the <a href="/termsAndConditions.php" target="_blank">Terms & Conditions</a></label>
           </div>
           <button type="submit" class="btn btn-success">Submit</button>
         </form>

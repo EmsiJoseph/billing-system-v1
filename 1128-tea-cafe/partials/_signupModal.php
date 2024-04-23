@@ -45,6 +45,10 @@
               <b><label for="password1">Renter Password:</label></b>
               <input class="form-control" id="cpassword" name="cpassword" placeholder="Renter Password" type="password" required data-toggle="password" minlength="4" maxlength="21">
             </div>
+            <div class="form-group form-check">
+              <input type="checkbox" class="form-check-input" id="termsAndConditions" required>
+              <label class="form-check-label" for="termsAndConditions">I agree to the <a href="/termsAndConditions.php" target="_blank">Terms & Conditions</a></label>
+            </div>
             <button type="submit" class="btn btn-success">Submit</button>
           </form>
           <p class="mb-0 mt-1">Already have an account? <a href="#" data-dismiss="modal" data-toggle="modal" data-target="#loginModal">Login here</a>.</p>
