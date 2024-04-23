@@ -96,13 +96,6 @@ CREATE TABLE `orderitems` (
 -- Dumping data for table `orderitems`
 --
 
-INSERT INTO `orderitems` (`id`, `orderId`, `prodId`, `size`, `itemQuantity`, `price`) VALUES
-(28, 'ORD20240423025417-00005-402ec', 6, 'Large', 4, 55.00),
-(29, 'ORD20240423025519-00006-f12e8', 6, 'Large', 1, 55.00),
-(30, 'ORD20240423030028-00007-06500', 31, 'Large', 1, 45.00),
-(31, 'ORD20240423030412-00008-d3b21', 31, 'Large', 1, 45.00),
-(32, 'ORD20240423033214-00009-9df7b', 31, 'Large', 1, 45.00),
-(33, 'ORD20240423033214-00009-9df7b', 6, 'Large', 1, 55.00);
 
 -- --------------------------------------------------------
 
@@ -123,16 +116,6 @@ CREATE TABLE `orders` (
 -- Dumping data for table `orders`
 --
 
-INSERT INTO `orders` (`orderId`, `userId`, `amount`, `paymentMode`, `orderStatus`, `orderDate`) VALUES
-('ORD20240422223301-00001-70f20', 5, 76, '2', '5', '2024-04-22 22:33:01'),
-('ORD20240422232153-00002-f3a05', 5, 55, '2', '5', '2024-04-22 23:21:53'),
-('ORD20240422234508-00003-20207', 5, 55, '2', '4', '2024-04-22 23:45:08'),
-('ORD20240423002415-00004-b4d5e', 5, 55, '2', '6', '2024-04-23 00:24:15'),
-('ORD20240423025417-00005-402ec', 1, 220, '2', '6', '2024-04-23 02:54:17'),
-('ORD20240423025519-00006-f12e8', 1, 55, '2', '4', '2024-04-23 02:55:19'),
-('ORD20240423030028-00007-06500', 1, 45, '2', '0', '2024-04-23 03:00:28'),
-('ORD20240423030412-00008-d3b21', 1, 45, '2', '0', '2024-04-23 03:04:12'),
-('ORD20240423033214-00009-9df7b', 1, 100, '2', '0', '2024-04-23 03:32:14');
 
 -- --------------------------------------------------------
 
@@ -226,11 +209,8 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`userId`, `nickname`, `firstName`, `lastName`, `email`, `phone`, `userType`, `password`, `joinDate`) VALUES
-(1, 'adminuser', 'Admin', 'User', 'admin@gmail.com', 9876543210, '1', '2yn.4fvaTgedM', '2024-04-20 00:31:39'),
-(3, 'mcagbanlog', 'Mc Joseph', 'Agbanlog', 'mcagbanlog@gmail.com', 9762623231, '1', '2y4bs7CN7beW2', '2024-04-20 14:58:09'),
-(5, 'fasfsafa', 'Mc Joseph', 'Agbanlog', 'joseph@gmail.com', 9762623231, '0', '2yrj4cszGMpEI', '2024-04-22 18:13:13'),
-(7, 'fasfsafa', 'Mc Joseph', 'Agbanlog', 'mcagbanlog1@gmail.com', 9762623231, '0', '2y09nJLRBUA.c', '2024-04-23 01:16:43'),
-(8, 'fas', 'Mc Joseph', 'Agbanlog', 'mcagbanlog1231312312@gmail.com', 9762623231, '0', '2yvBS8p95lVkg', '2024-04-23 02:53:03');
+(1, 'adminuser', 'Admin', 'User', 'admin@gmail.com', 9876543210, '1', 'admin', '2024-04-20 00:31:39'),
+
 
 -- --------------------------------------------------------
 

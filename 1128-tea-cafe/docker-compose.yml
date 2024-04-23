@@ -10,6 +10,7 @@ services:
       MYSQL_ROOT_HOST: "%"
     volumes:
       - "./db:/docker-entrypoint-initdb.d"
+      - "./dbdata:/var/lib/mysql"
 
   www:
     image: php:apache
