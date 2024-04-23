@@ -104,7 +104,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $updateSql = "UPDATE `viewcart` SET `itemQuantity`='$newQuantity' WHERE prodId = '$itemId' AND `userId`='$userId' AND `size`='$size'";
             $updateResult = mysqli_query($conn, $updateSql);
         } else {
-            // If the item does not exist, insert it into the cart with the specified size and quantity
             $sql = "INSERT INTO `viewcart` (`userId`, `prodId`, `size`, `itemQuantity`, `addedDate`) VALUES ('$userId', '$itemId', '$size', '$quantity', current_timestamp())";
             $result = mysqli_query($conn, $sql);
         }
