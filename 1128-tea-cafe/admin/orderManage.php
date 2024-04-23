@@ -254,8 +254,9 @@ if (isset($result)) {
                             <div>
                                 <label>Payment Mode:</label>
                                 <select class="form-control" name="paymentMode" readonly>
-                                    <option value="0" <?= $paymentMode == 0 ? 'selected' : ''; ?>>Cash</option>
-                                    <option value="1" <?= $paymentMode == 1 ? 'selected' : ''; ?>>Online</option>
+                                    <option value="0" <?= $paymentMode == 0 ? 'selected' : ''; ?>>Gcash</option>
+                                    <option value="1" <?= $paymentMode == 1 ? 'selected' : ''; ?>>Paymaya</option>
+                                    <option value="2" <?= $paymentMode == 2 ? 'selected' : ''; ?>>Cash</option>
                                 </select>
                             </div>
                             <div>
