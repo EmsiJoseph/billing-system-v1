@@ -1,8 +1,6 @@
 <?php
-// Assuming you have the $row['orderId'] available in the scope
 $orderId = $row['orderId'];
 
-// Query to fetch order details
 $orderSql = "SELECT * FROM `orders` WHERE `orderId` = ?";
 $orderStmt = $conn->prepare($orderSql);
 $orderStmt->bind_param("s", $orderId);
@@ -10,7 +8,6 @@ $orderStmt->execute();
 $orderResult = $orderStmt->get_result();
 $orderRow = $orderResult->fetch_assoc();
 
-// Query to fetch order items
 $orderItemsSql = "SELECT oi.*, p.prodName FROM `orderitems` oi JOIN `prod` p ON oi.prodId = p.prodId WHERE oi.orderId = ?";
 $orderItemsStmt = $conn->prepare($orderItemsSql);
 $orderItemsStmt->bind_param("s", $orderId);
@@ -18,28 +15,21 @@ $orderItemsStmt->execute();
 $orderItemsResult = $orderItemsStmt->get_result();
 ?>
 
-<!-- Receipt Modal -->
 <div class="modal fade" id="receiptModal<?php echo $orderId; ?>" tabindex="-1" role="dialog" aria-labelledby="receiptModalLabel<?php echo $orderId; ?>" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
-            <!-- Modal header -->
             <div class="modal-header">
-                <!-- Modal title -->
                 <h5 class="modal-title" id="receiptModalLabel<?php echo $orderId; ?>">Order Receipt</h5>
-                <!-- Close button -->
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <!-- Modal body -->
             <div class="modal-body">
-                <!-- Receipt details -->
                 <h6>Order ID: <?php echo $orderId; ?></h6>
                 <h6>Date: <?php echo $orderRow['orderDate']; ?></h6>
                 <h6>Payment Mode: <?php echo $orderRow['paymentMode']; ?></h6>
                 <h6>Pickup By: <?php echo $orderRow['pickupPersonName']; ?> at <?php echo $orderRow['pickupTime']; ?></h6>
                 <h6>Phone: <?php echo $orderRow['pickupPersonPhone']; ?></h6>
-                <!-- Order items -->
                 <table class="table">
                     <thead>
                         <tr>

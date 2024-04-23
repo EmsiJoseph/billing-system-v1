@@ -5,31 +5,28 @@
 <html lang="en">
 
 <head>
-  <!-- Required meta tags -->
+
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <!-- Bootstrap CSS -->
+
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" crossorigin="anonymous">
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
   <style>
     .card {
-      /* Ensuring all cards have the same height */
+
       height: 100%;
     }
 
     .card-img-top {
       height: 200px;
-      /* Set a fixed height for images */
       object-fit: cover;
-      /* Cover the area without losing aspect ratio */
     }
 
     .card-body {
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      /* Space content evenly */
     }
   </style>
   <title>Home</title>
@@ -72,10 +69,8 @@
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
   <script>
     $(document).ready(function() {
-      // Simple fade-in effect when the cards load
       $('.card').hide().fadeIn(1000);
 
-      // Grow effect on hover
       $('.card').hover(function() {
           $(this).animate({
             'zoom': 1.05

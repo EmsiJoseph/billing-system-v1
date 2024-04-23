@@ -1,19 +1,11 @@
-/**
- * Template Name: Shuffle - v2.3.1
- * Template URL: https://bootstrapmade.com/bootstrap-3-one-page-template-free-shuffle/
- * Author: BootstrapMade.com
- * License: https://bootstrapmade.com/license/
- */
 !(function ($) {
   "use strict";
 
-  // Stick the header at top on scroll
   $("#header").sticky({
     topSpacing: 0,
     zIndex: "50",
   });
 
-  // Smooth scroll for the navigation menu and links with .scrollto classes
   var scrolltoOffset = $("#header").outerHeight() - 1;
   $(document).on(
     "click",
@@ -60,7 +52,6 @@
     }
   );
 
-  // Activate smooth scroll on page load with hash links in the url
   $(document).ready(function () {
     if (window.location.hash) {
       var initial_nav = window.location.hash;
@@ -77,7 +68,6 @@
     }
   });
 
-  // Mobile Navigation
   if ($(".nav-menu").length) {
     var $mobile_nav = $(".nav-menu").clone().prop({
       class: "mobile-nav d-lg-none",
@@ -118,7 +108,6 @@
     $(".mobile-nav, .mobile-nav-toggle").hide();
   }
 
-  // Navigation active state on scroll
   var nav_sections = $("section");
   var main_nav = $(".nav-menu, .mobile-nav");
 
@@ -144,7 +133,6 @@
     });
   });
 
-  // Intro carousel
   var heroCarousel = $("#heroCarousel");
   var heroCarouselIndicators = $("#hero-carousel-indicators");
   heroCarousel
@@ -179,7 +167,6 @@
       .addClass("animate__animated animate__fadeInUp");
   });
 
-  // Back to top button
   $(window).scroll(function () {
     if ($(this).scrollTop() > 100) {
       $(".back-to-top").fadeIn("slow");
@@ -199,7 +186,6 @@
     return false;
   });
 
-  // Skills section
   $(".skills-content").waypoint(
     function () {
       $(".progress .progress-bar").each(function () {
@@ -211,31 +197,8 @@
     }
   );
 
-  // jQuery counterUp
   $('[data-toggle="counter-up"]').counterUp({
     delay: 10,
     time: 1000,
   });
-
-  // Porfolio isotope and filter
-  // $(window).on('load', function() {
-  //   var portfolioIsotope = $('.portfolio-container').isotope({
-  //     itemSelector: '.portfolio-item',
-  //     layoutMode: 'fitRows'
-  //   });
-
-  //   $('#portfolio-flters li').on('click', function() {
-  //     $("#portfolio-flters li").removeClass('filter-active');
-  //     $(this).addClass('filter-active');
-
-  //     portfolioIsotope.isotope({
-  //       filter: $(this).data('filter')
-  //     });
-  //   });
-
-  //   // Initiate venobox (lightbox feature used in portofilo)
-  //   $(document).ready(function() {
-  //     $('.venobox').venobox();
-  //   });
-  // });
 })(jQuery);

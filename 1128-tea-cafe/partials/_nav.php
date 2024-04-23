@@ -19,28 +19,23 @@ if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
   $loggedin = false;
 }
 
-// Fetch system name
 if ($result = mysqli_query($conn, "SELECT * FROM `sitedetail`")) {
   if ($row = mysqli_fetch_assoc($result)) {
     $systemName = $row['systemName'];
   }
 } else {
-  // Handle error
   $error = mysqli_error($conn);
 }
 
-// Fetch categories
 $categoryQuery = "SELECT categoryName, categoryId FROM `categories`";
 if ($result = mysqli_query($conn, $categoryQuery)) {
   while ($row = mysqli_fetch_assoc($result)) {
     $categories[] = $row;
   }
 } else {
-  // Handle error
   $error = mysqli_error($conn);
 }
 
-// Fetch cart count
 if ($loggedin) {
   $countsql = "SELECT SUM(`itemQuantity`) AS itemCount FROM `viewcart` WHERE `userId`=?";
   if ($stmt = mysqli_prepare($conn, $countsql)) {
@@ -49,7 +44,7 @@ if ($loggedin) {
     mysqli_stmt_bind_result($stmt, $count);
     mysqli_stmt_fetch($stmt);
     mysqli_stmt_close($stmt);
-    $count = $count ?: 0; // Ensure count is not null
+    $count = $count ?: 0;
   }
 }
 ?>
@@ -113,7 +108,6 @@ if ($loggedin) {
 include 'partials/_loginModal.php';
 include 'partials/_signupModal.php';
 
-// Alert messages for sign up and login feedback
 if (isset($_GET['signupsuccess']) && $_GET['signupsuccess'] === "true") {
   echo '<div class="alert alert-success alert-dismissible fade show" role="alert">
           <strong>Success!</strong> You can now login.

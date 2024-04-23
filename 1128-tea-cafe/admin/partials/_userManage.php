@@ -22,7 +22,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $password = $_POST["password"];
         $cpassword = $_POST["cpassword"];
 
-        // Check whether this email exists
         $existSql = "SELECT * FROM `users` WHERE email = '$email'";
         $result = mysqli_query($conn, $existSql);
         $numExistRows = mysqli_num_rows($result);

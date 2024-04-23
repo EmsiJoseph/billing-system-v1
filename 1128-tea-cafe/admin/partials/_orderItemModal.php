@@ -1,7 +1,6 @@
 <?php
-include 'partials/_dbconnect.php';  // Make sure your database connection is correct
+include 'partials/_dbconnect.php';
 
-// Function to get order status description
 function getOrderStatusDescription($status)
 {
     $statuses = [
@@ -16,7 +15,6 @@ function getOrderStatusDescription($status)
     return $statuses[$status] ?? 'Unknown Status';
 }
 
-// Fetch all necessary order details along with user details
 $itemModalSql = "SELECT o.*, oi.prodId, oi.itemQuantity, p.prodName, ps.price FROM orders o
                  JOIN orderitems oi ON o.orderId = oi.orderId
                  JOIN prod p ON oi.prodId = p.prodId
@@ -55,8 +53,6 @@ foreach ($orders as $order) {
     echo "<span aria-hidden='true'>&times;</span>";
     echo "</button></div>";
     echo "<div class='modal-body'>";
-    // Modal Body Content
-    // Display order items here
     foreach ($order['items'] as $item) {
         echo "<p>{$item['prodName']} - Quantity: {$item['itemQuantity']} - Price: {$item['price']}</p>";
     }

@@ -28,12 +28,10 @@ function handleCheckout($conn, $userId)
         $insertOrderStmt->bind_param("siss", $orderId, $userId, $totalPrice, $paymentMode);
         $insertOrderStmt->execute();
 
-        // Commit transaction only if all operations succeed
         if ($insertOrderStmt->affected_rows > 0) {
             $conn->commit();
             $_SESSION['status'] = "Thanks for ordering with us. Your order id is $orderId.";
 
-            // Fetch items from viewcart and join with prod_sizes to get prices
             $cartItemsSql = "SELECT vc.*, ps.price FROM viewcart vc
                  JOIN prod_sizes ps ON vc.prodId = ps.prodId AND vc.size = ps.size
                  WHERE vc.userId=?";
@@ -42,20 +40,15 @@ function handleCheckout($conn, $userId)
             $cartStmt->execute();
             $cartItemsResult = $cartStmt->get_result();
 
-            // Prepare statement to insert order items
             $insertItemStmt = $conn->prepare("INSERT INTO orderitems (orderId, prodId, size, itemQuantity, price) VALUES (?, ?, ?, ?, ?)");
 
-            // Insert items into orderitems
             while ($cartItem = $cartItemsResult->fetch_assoc()) {
-                // Bind and execute insert for each item with the fetched price
                 $insertItemStmt->bind_param("sisid", $orderId, $cartItem['prodId'], $cartItem['size'], $cartItem['itemQuantity'], $cartItem['price']);
                 $insertItemStmt->execute();
                 if ($insertItemStmt->affected_rows == 0) {
                     throw new Exception("Failed to insert order item.");
                 }
             }
-
-            // Assuming the deletion of cart items is performed after successful insertion
             $deleteCartStmt = $conn->prepare("DELETE FROM viewcart WHERE userId=?");
             $deleteCartStmt->bind_param("i", $userId);
             $deleteCartStmt->execute();
@@ -63,7 +56,6 @@ function handleCheckout($conn, $userId)
                 throw new Exception("Failed to clear cart items after order placement.");
             }
 
-            // Check if all operations are successful and commit transaction
             $conn->commit();
 
             $_SESSION['status'] = "Order placed successfully. Your order ID is $orderId.";
@@ -88,17 +80,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (isset($_POST['addToCart'])) {
         $itemId = $_POST["itemId"];
-        $size = $_POST["size"]; // Received from the form
-        $quantity = $_POST["quantity"]; // Quantity input
+        $size = $_POST["size"];
+        $quantity = $_POST["quantity"];
 
 
-        // Check whether this item with the specific size already exists in the cart
         $existSql = "SELECT * FROM `viewcart` WHERE prodId = '$itemId' AND `userId`='$userId' AND `size`='$size'";
         $result = mysqli_query($conn, $existSql);
         $numExistRows = mysqli_num_rows($result);
 
         if ($numExistRows > 0) {
-            // If the item already exists, update the quantity
             $row = mysqli_fetch_assoc($result);
             $newQuantity = $row['itemQuantity'] + $quantity;
             $updateSql = "UPDATE `viewcart` SET `itemQuantity`='$newQuantity' WHERE prodId = '$itemId' AND `userId`='$userId' AND `size`='$size'";
@@ -117,7 +107,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     }
 
-    // Handle Remove Item
     if (isset($_POST['removeItem'])) {
         $cartItemId = $_POST["cartItemId"];
         $size = $_POST["size"];
@@ -133,16 +122,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
 
-    // Handle Checkout
     if (isset($_POST['checkout'])) {
         handleCheckout($conn, $userId);
     }
 
-    // AJAX request handling
     if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
         $cartItemId = $_POST['cartItemId'];
         $qty = $_POST['quantity'];
-        // Using prepared statements for better security
         $updatesql = "UPDATE `viewcart` SET `itemQuantity` = ? WHERE `cartItemId` = ? AND `userId` = ?";
         $stmt = $conn->prepare($updatesql);
         $stmt->bind_param("iii", $qty, $cartItemId, $userId);

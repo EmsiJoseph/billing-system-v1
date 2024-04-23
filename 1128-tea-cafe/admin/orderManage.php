@@ -15,11 +15,9 @@ function getOrderStatusDescription($status)
 
 include 'partials/_dbconnect.php';
 
-// Fetch orders and define $statuses array
 $sql = "SELECT orders.*, users.email FROM orders JOIN users ON orders.userId = users.userId ORDER BY orders.orderDate DESC";
 $result = mysqli_query($conn, $sql);
 
-// Define $statuses array here
 $statuses = [
     '0' => 'Order Placed',
     '1' => 'Order Confirmed',

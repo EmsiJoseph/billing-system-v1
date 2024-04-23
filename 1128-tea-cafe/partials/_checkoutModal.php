@@ -16,13 +16,11 @@ if ($row = $result->fetch_assoc()) {
     .payment-modes-container {
         display: flex;
         justify-content: space-around;
-        /* This will space out the cards equally */
         align-items: center;
     }
 
     .payment-mode-card {
         flex: 1;
-        /* This allows the cards to grow and take up equal space */
         cursor: pointer;
         display: flex;
         flex-direction: column;
@@ -31,14 +29,11 @@ if ($row = $result->fetch_assoc()) {
         border-radius: 0.25rem;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
         margin: 0 5px;
-        /* Apply a small margin to each side of the cards */
         padding: 10px;
-        /* Inner padding for content */
     }
 
     .payment-mode-card img {
         max-width: 80%;
-        /* Limit image size */
         height: auto;
     }
 
@@ -63,28 +58,21 @@ if ($row = $result->fetch_assoc()) {
             </div>
             <div class="modal-body">
                 <form action="\partials\_manageCart.php" method="POST">
-                    <!-- User details inputs -->
-
-                    <!-- Payment Mode Selection -->
                     <label>Payment Mode:</label>
                     <div class="payment-modes-container">
-                        <!-- PayMaya -->
                         <div class="payment-mode-card" data-value="0">
                             <img src="path_to_paymaya_icon" alt="PayMaya">
                             <p class="text-center mb-0">PayMaya</p>
                         </div>
-                        <!-- Gcash -->
                         <div class="payment-mode-card" data-value="1">
                             <img src="path_to_gcash_icon" alt="Gcash">
                             <p class="text-center mb-0">Gcash</p>
                         </div>
-                        <!-- Cash -->
                         <div class="payment-mode-card" data-value="2">
                             <img src="path_to_cash_icon" alt="Cash">
                             <p class="text-center mb-0">Cash</p>
                         </div>
                     </div>
-                    <!-- Hidden input to store payment mode value -->
                     <input type="hidden" id="paymentMode" name="paymentMode" value="">
                     <input type="hidden" name="totalPrice" value="<?php echo htmlspecialchars($totalPrice); ?>">
             </div>
@@ -101,7 +89,6 @@ if ($row = $result->fetch_assoc()) {
 </div>
 
 <script>
-    // JavaScript to handle card selection
     document.querySelectorAll('.payment-mode-card').forEach(card => {
         card.addEventListener('click', function() {
             document.querySelectorAll('.payment-mode-card').forEach(c => c.classList.remove('active'));

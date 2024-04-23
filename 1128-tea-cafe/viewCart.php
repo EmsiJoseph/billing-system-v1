@@ -166,7 +166,6 @@
 
             });
 
-            // Add the total price to the summary
             summaryHtml += `
             <li class='list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3'>
                 <div class="w-100 d-flex justify-content-between">
@@ -176,7 +175,6 @@
             </li>
         `;
 
-            // Update the order summary's HTML
             document.querySelector('.list-group').innerHTML = summaryHtml;
 
         }
@@ -184,16 +182,14 @@
         function updateCart(cartItemId, qty, price) {
             if (qty < 1) {
                 alert("Quantity can't be less than 1.");
-                return; // Stop the function if qty is less than 1
+                return;
             }
             let totalElement = document.querySelector(`#total${cartItemId}`);
             let oldTotal = parseFloat(totalElement.innerText.replace('PHP ', ''));
             let newTotal = qty * price;
 
-            // Update the total for the item
             totalElement.innerText = `PHP ${newTotal.toFixed(2)}`;
 
-            // Update the cart in the backend
             $.ajax({
                 url: 'partials/_manageCart.php',
                 type: 'POST',

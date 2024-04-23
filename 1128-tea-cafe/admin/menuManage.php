@@ -192,7 +192,6 @@ while ($prodRow = mysqli_fetch_assoc($prodResult)) {
 	<script>
 		function confirmDeletion(prodId) {
 			if (confirm('Are you sure you want to delete this item?')) {
-				// Implement the deletion logic here, or submit a form
 				const form = document.createElement('form');
 				form.method = 'post';
 				form.action = 'partials/_menuManage.php';

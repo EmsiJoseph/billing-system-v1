@@ -1,26 +1,26 @@
 <?php
 echo '<style>
     .category-link {
-        color: #333; /* Dark text for sufficient contrast */
-        text-decoration: none; /* No underlining */
-        font-size: 16px; /* Readable text size */
-        padding: 12px 20px; /* Increased padding for a larger clickable area */
-        border: none; /* No border to maintain a shapeless appearance */
-        cursor: pointer; /* Cursor indicates clickable element */
-        display: inline-flex; /* Flex to align icon and text */
-        align-items: center; /* Vertical alignment */
-        gap: 10px; /* Increased spacing between icon and text */
-        transition: background-color 0.2s ease-in-out; /* Smooth transition for background */
+        color: #333; 
+        text-decoration: none; 
+        font-size: 16px; 
+        padding: 12px 20px; 
+        border: none; 
+        cursor: pointer;
+        display: inline-flex; 
+        align-items: center; 
+        gap: 10px; 
+        transition: background-color 0.2s ease-in-out; 
     }
 
     .category-link:hover, .category-link:focus {
-        text-decoration: none; /* Removing underline for a cleaner hover effect */
-        // background-color: #eaeaea; /* Slight background on hover for feedback */
-        border-radius: 4px; /* Optional: Adds subtle rounding to the hover background */
+        text-decoration: none; 
+        // background-color: #eaeaea; 
+        border-radius: 4px; 
     }
 
     .category-link i {
-        font-size: 20px; /* Icon size */
+        font-size: 20px;
     }
 </style>
 

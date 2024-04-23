@@ -1,16 +1,14 @@
 <?php
-include 'partials/_nav.php';  // Assuming this file contains the navigation and session start
-include 'partials/_dbconnect.php';  // Database connection file
+include 'partials/_nav.php';
+include 'partials/_dbconnect.php';
 
-// Check for order ID in query string
 if (!isset($_GET['orderId']) || empty($_GET['orderId'])) {
-    header("Location: index.php");  // Redirect to home if no orderId provided
+    header("Location: index.php");
     exit();
 }
 
 $orderId = $_GET['orderId'];
 
-// Retrieve order details
 $orderSql = "SELECT * FROM `orders` WHERE orderId=?";
 $orderStmt = $conn->prepare($orderSql);
 $orderStmt->bind_param("s", $orderId);
@@ -18,7 +16,6 @@ $orderStmt->execute();
 $orderResult = $orderStmt->get_result();
 $order = $orderResult->fetch_assoc();
 
-// Retrieve items for this order
 $itemsSql = "SELECT oi.prodId, p.prodName, oi.size, oi.itemQuantity, oi.price FROM `orderitems` oi JOIN `prod` p ON oi.prodId = p.prodId WHERE orderId=?";
 $itemsStmt = $conn->prepare($itemsSql);
 $itemsStmt->bind_param("s", $orderId);

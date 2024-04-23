@@ -1,9 +1,4 @@
 <style>
-    /* .modal-body {
-        background-color: #eeeeee;
-        font-family: 'Open Sans', serif
-    } */
-
     .card {
         position: relative;
         display: -webkit-box;
