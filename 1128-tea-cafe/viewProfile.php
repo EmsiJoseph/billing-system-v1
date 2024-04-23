@@ -1,3 +1,6 @@
+<?php require 'partials/_nav.php' ?>
+<?php include 'partials/_dbconnect.php'; ?>
+
 <!DOCTYPE HTML>
 <html lang="en">
 
@@ -131,15 +134,14 @@
 </head>
 
 <body>
-    <?php include 'partials/_dbconnect.php'; ?>
-    <?php require 'partials/_nav.php' ?>
+
     <?php
     if ($loggedin) {
     ?>
 
         <div class="container">
             <?php
-            $sql = "SELECT * FROM users WHERE id='$userId'";
+            $sql = "SELECT * FROM users WHERE userId='$userId'";
             $result = mysqli_query($conn, $sql);
             $row = mysqli_fetch_assoc($result);
             $nickname = $row['nickname'];
@@ -159,17 +161,6 @@
                 <div class="jumbotron p-3 mb-3" style="display: flex;justify-content: center;width: 28%;border-radius: 50px;margin: 0 auto;">
                     <div class="user-info">
                         <img class="rounded-circle mb-3 bg-dark" src="img/person-<?php echo $userId; ?>.jpg" onError="this.src = 'img/profilePic.jpg'" style="width:215px;height:215px;padding:1px;">
-                        <form action="partials/_manageProfile.php" method="POST">
-                            <small>Remove Image: </small><button type="submit" class="btn btn-primary" name="removeProfilePic" style="font-size: 12px;padding: 3px 8px;border-radius: 9px;">remove</button>
-                        </form>
-                        <form action="partials/_manageProfile.php" method="POST" enctype="multipart/form-data" style="margin-top: 7px;">
-                            <div class="upload-btn-wrapper">
-                                <small>Change Image:</small>
-                                <button class="btn upload">choose</button>
-                                <input type="file" name="image" id="image" accept="image/*">
-                            </div>
-                            <button type="submit" name="updateProfilePic" class="btn btn-primary" style="margin-top: -20px;font-size: 15px;padding: 3px 8px;">Update</button>
-                        </form>
 
                         <ul class="meta list list-unstyled" style="text-align:center;">
                             <li class="nickname my-2"><a href="viewProfile.php">@<?php echo $nickname ?></a></li>
@@ -187,7 +178,7 @@
 
                         <form action="partials/_manageProfile.php" method="post">
                             <div class="form-group">
-                                <b><label for="nickname">nickname:</label></b>
+                                <b><label for="nickname">Nickname:</label></b>
                                 <input class="form-control" id="nickname" name="nickname" type="text" disabled value="<?php echo $nickname ?>">
                             </div>
                             <div class="form-row">
@@ -209,7 +200,7 @@
                                     <b><label for="phone">Phone No:</label></b>
                                     <div class="input-group mb-3">
                                         <div class="input-group-prepend">
-                                            <span class="input-group-text" id="basic-addon">+91</span>
+                                            <span class="input-group-text" id="basic-addon">+63</span>
                                         </div>
                                         <input type="tel" class="form-control" id="phone" name="phone" placeholder="Enter Your Phone Number" required pattern="[0-9]{10}" maxlength="10" value="<?php echo $phone ?>">
                                     </div>
