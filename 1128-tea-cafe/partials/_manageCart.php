@@ -25,7 +25,7 @@ function handleCheckout($conn, $userId)
     try {
         $orderId = generateOrderId($conn);
         $insertOrderStmt = $conn->prepare("INSERT INTO `orders` (orderId, userId, amount, paymentMode, orderStatus, orderDate) VALUES (?, ?, ?, ?, '0', NOW())");
-        $insertOrderStmt->bind_param("sisi", $orderId, $userId, $totalPrice, $paymentMode);
+        $insertOrderStmt->bind_param("siss", $orderId, $userId, $totalPrice, $paymentMode);
         $insertOrderStmt->execute();
 
         // Commit transaction only if all operations succeed

@@ -71,7 +71,7 @@
 <body>
     <main id="main" class=" bg-dark">
         <div id="login-left">
-
+            <img src="..\img\About.png" alt="About Us">
         </div>
         <div id="login-right">
             <div class="card col-md-8">
@@ -79,11 +79,11 @@
                     <form action="partials/_handleLogin.php" method="post">
                         <div class="form-group">
                             <label for="email" class="control-label"><b>Email</b></label>
-                            <input type="text" id="email" name="email" class="form-control">
+                            <input type="text" id="email" name="email" class="form-control" placeholder="Enter your admin email here">
                         </div>
                         <div class="form-group">
                             <label for="password" class="control-label"><b>Password</b></label>
-                            <input type="password" id="password" name="password" class="form-control">
+                            <input type="password" id="password" name="password" class="form-control" placeholder="Enter password">
                         </div>
                         <center><button type="submit" class="btn-sm btn-block btn-wave col-md-4 btn-primary">Login</button></center>
                     </form>
