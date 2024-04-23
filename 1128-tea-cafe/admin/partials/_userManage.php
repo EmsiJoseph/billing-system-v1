@@ -53,12 +53,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
     if (isset($_POST['editUser'])) {
         $id = $_POST["userId"];
+        $nickname = $_POST["nickname"];
         $firstName = $_POST["firstName"];
         $lastName = $_POST["lastName"];
         $phone = $_POST["phone"];
         $userType = $_POST["userType"];
+        $userType = $_POST["userType"];
 
-        $sql = "UPDATE `users` SET `firstName`='$firstName', `lastName`='$lastName',  `phone`='$phone', `userType`='$userType' WHERE `userId`='$id'";
+        $sql = "UPDATE `users` SET `nickname`='$nickname',`firstName`='$firstName', `lastName`='$lastName',  `phone`='$phone', `userType`='$userType' WHERE `userId`='$id'";
         $result = mysqli_query($conn, $sql);
         if ($result) {
             echo "<script>alert('update successfully');
