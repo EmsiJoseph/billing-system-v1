@@ -60,6 +60,6 @@ if ($adminloggedin) {
 
 <?php
 } else {
-    header("location: admin/login.php");
+    header("location: /login.php");
 }
 ?>
