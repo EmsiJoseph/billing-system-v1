@@ -36,7 +36,7 @@
                             $phone = $row['phone'];
                             $userType = $row['userType'];
                             if ($userType == 0)
-                                $userType = "user";
+                                $userType = "User";
                             else
                                 $userType = "Admin";
 
@@ -142,7 +142,7 @@
 $usersql = "SELECT * FROM `users`";
 $userResult = mysqli_query($conn, $usersql);
 while ($userRow = mysqli_fetch_assoc($userResult)) {
-    $userId = $userRow['id'];
+    $userId = $userRow['userId'];
     $name = $userRow['nickname'];
     $firstName = $userRow['firstName'];
     $lastName = $userRow['lastName'];

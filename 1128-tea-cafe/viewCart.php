@@ -6,7 +6,6 @@
 <html lang="en">
 
 <head>
-    <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" crossorigin="anonymous">
@@ -24,12 +23,10 @@
 
         .list-group-item {
             justify-content: space-between;
-            /* Ensures items in the list are spaced out between start and end of the list item */
         }
 
         .list-group-item div.w-100 {
             padding-right: 15px;
-            /* Adds padding to align the total price */
         }
 
         .list-group-item .w-100 {
@@ -40,7 +37,6 @@
 
         .list-group-item .w-100 strong {
             min-width: 50%;
-            /* This ensures that the label "Total Price" doesn't jump around */
             text-align: left;
         }
     </style>
@@ -110,7 +106,7 @@
                             <h5 class="mb-3 text-uppercase font-weight-bold text-center">Order summary</h5>
                             <ul class="list-group list-group-flush">
                                 <?php
-                                mysqli_data_seek($result, 0); // Reset result pointer
+                                mysqli_data_seek($result, 0);
                                 while ($item = mysqli_fetch_assoc($result)) {
                                     echo "<li class='list-group-item d-flex justify-content-between align-items-center'>
                         {$item['prodName']} ({$item['size']})
@@ -148,12 +144,10 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
     <script>
         function updateOrderSummary() {
-            // Get all the rows from the cart table
             let cartRows = document.querySelectorAll('.table tbody tr');
             let summaryHtml = '';
             let newTotalPrice = 0;
 
-            // Loop through each row and calculate the new total price
             cartRows.forEach(row => {
                 let name = row.cells[1].innerText;
                 let size = row.cells[2].innerText;

@@ -20,7 +20,7 @@ services:
       - "443:443"
     depends_on:
       - db
-    command: /bin/sh -c "docker-php-ext-install mysqli && php /var/www/html/partials/_hashPasswords.php && chown -R www-data:www-data /var/www/html && apache2-foreground"
+    command: /bin/sh -c "docker-php-ext-install mysqli && chown -R www-data:www-data /var/www/html && apache2-foreground"
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin

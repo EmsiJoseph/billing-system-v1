@@ -2,17 +2,13 @@
 <?php include 'partials/_dbconnect.php'; ?>
 <?php include 'partials/_orderItemModal.php'; ?>
 
-
 <!doctype html>
 <html lang="en">
 
 <head>
-    <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
     <title>Your Order</title>
@@ -162,45 +158,15 @@
             background-color: #f8f9fa;
         }
     </style>
-
 </head>
 
 <body>
-    <?php if ($loggedin) {
-        function updateOrderStatus($conn, $userId)
-        {
-            $currentTime = time();
-            $stmt = $conn->prepare("SELECT orderId, orderDate FROM orders WHERE userId = ? AND orderStatus NOT IN (6)");
-            $stmt->bind_param("i", $userId);
-            $stmt->execute();
-            $result = $stmt->get_result();
-
-            while ($order = $result->fetch_assoc()) {
-                $orderTime = strtotime($order['orderDate']);
-                $timePassed = $currentTime - $orderTime;
-
-                if ($timePassed > 1200) { // 20 minutes * 60 seconds
-                    $updateStmt = $conn->prepare("UPDATE orders SET orderStatus = 6 WHERE orderId = ?");
-                    $updateStmt->bind_param("s", $order['orderId']);
-                    $updateStmt->execute();
-                }
-            }
-        }
-        updateOrderStatus($conn, $userId);
-    }
-    ?>
-
     <?php if ($loggedin) : ?>
-
         <div class="container mt-4">
             <h1 class="text-center">My Orders</h1>
             <ul class="nav nav-tabs">
-                <li class="nav-item">
-                    <a class="nav-link active" data-toggle="tab" href="#claimable">Claimable</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#cancelled">Cancelled</a>
-                </li>
+                <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#claimable">Active</a></li>
+                <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#cancelled">Inactive</a></li>
             </ul>
 
             <div class="tab-content">
@@ -208,7 +174,7 @@
                 <div id="claimable" class="tab-pane fade show active">
                     <div class="row">
                         <?php
-                        $stmt = $conn->prepare("SELECT orderId, amount, orderDate, UNIX_TIMESTAMP(orderDate) AS timestamp FROM orders WHERE userId = ? AND orderStatus NOT IN (6) ORDER BY orderDate DESC");
+                        $stmt = $conn->prepare("SELECT orderId, amount, orderDate, UNIX_TIMESTAMP(orderDate) AS timestamp, orderStatus FROM orders WHERE userId = ? AND orderStatus NOT IN (4, 5, 6) ORDER BY orderDate DESC");
                         $stmt->bind_param("i", $userId);
                         $stmt->execute();
                         $result = $stmt->get_result();
@@ -217,50 +183,66 @@
                             $timeLeft = max(0, 20 * 60 - ($currentTime - $order['timestamp']));
                             $minutes = floor($timeLeft / 60);
                             $seconds = $timeLeft % 60;
-                            echo "
-                            <div class='col-md-6 mb-4'>
-                                <div class='card order-card' data-toggle='modal' data-target='#orderItem" . htmlspecialchars($order['orderId']) . "'>
-                                    <div class='card-body'>
-                                        <h5 class='card-title'>Order #" . htmlspecialchars($order['orderId']) . "</h5>
-                                        <p class='card-text'>Total: PHP " . number_format($order['amount'], 2) . "</p>
-                                        <p class='card-text countdown' data-time-left='$timeLeft'><strong>Time left to claim:</strong> <span>$minutes:$seconds</span></p>
+                            $statusText = getOrderStatusDescription($order['orderStatus']);
+                            if ($order['orderStatus'] == 0) {
+                                echo "<div class='col-md-6 mb-4'>
+                                    <div class='card order-card' data-toggle='modal' data-target='#orderItem" . htmlspecialchars($order['orderId']) . "'>
+                                        <div class='card-body'>
+                                            <h5 class='card-title'>Order #" . htmlspecialchars($order['orderId']) . "</h5>
+                                            <p class='card-text'>Total: PHP " . number_format($order['amount'], 2) . "</p>
+                                                <p class='card-text countdown' data-time-left='$timeLeft'><strong>Time left to claim:</strong> <span>$statusText</span></p>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>";
+                                </div>";
+                            } else {
+                                echo "<div class='col-md-6 mb-4'>
+                                    <div class='card order-card' data-toggle='modal' data-target='#orderItem" . htmlspecialchars($order['orderId']) . "'>
+                                        <div class='card-body'>
+                                            <h5 class='card-title'>Order #" . htmlspecialchars($order['orderId']) . "</h5>
+                                            <p class='card-text'>Total: PHP " . number_format($order['amount'], 2) . "</p>
+                                            <p class='card-text'><strong>Status:</strong> $statusText</p>
+                                        </div>
+                                    </div>
+                                </div>";
+                            }
                         }
                         if ($result->num_rows === 0) {
                             echo '
                         <div class="text-center w-100">
                             <p>No claimable orders found.</p>
-                            <p><a href="/viewCart.php" class="btn btn-primary">Checkout at Cart</a>  or  <a href="/index.php" class="btn btn-primary">Browse Menu</a></p>
+                            <p><a href="/viewCart.php" class="btn btn-primary">Checkout at Cart</a>  or  <a href="/" class="btn btn-primary">Browse Menu</a></p>
                         </div>';
                         }
                         ?>
                     </div>
-
                 </div>
                 <div id="cancelled" class="tab-pane fade">
                     <div class="row">
                         <?php
-                        $stmt = $conn->prepare("SELECT orderId, amount, orderDate, orderStatus FROM orders WHERE userId = ? AND orderStatus IN (5, 6) ORDER BY orderDate DESC");
+                        $stmt = $conn->prepare("SELECT orderId, amount, orderDate, orderStatus FROM orders WHERE userId = ? AND orderStatus IN (4, 5, 6) ORDER BY orderDate DESC");
                         $stmt->bind_param("i", $userId);
                         $stmt->execute();
                         $result = $stmt->get_result();
                         while ($order = $result->fetch_assoc()) {
-                            $statusMessage = ($order['orderStatus'] == 5) ? 'Order Denied' : 'Order Cancelled';
-                            echo "
-                            <div class='col-md-6 mb-4'>
-                                <div class='card order-card' data-toggle='modal' data-target='#orderItem" . htmlspecialchars($order['orderId']) . "'>
-                                    <div class='card-body'>
-                                        <h5 class='card-title'>Order #" . htmlspecialchars($order['orderId']) . "</h5>
-                                        <p class='card-text'>Ordered on " . date('M d, Y', strtotime($order['orderDate'])) . "</p>
-                                        <p class='card-text'>Total: PHP " . number_format($order['amount'], 2) . "</p>
-                                        <p class='card-text text-muted'>" . $statusMessage . "</p>
+                            $statusMessage = getOrderStatusDescription($order['orderStatus']);
+                            echo "<div class='col-md-6 mb-4'>
+                                    <div class='card order-card' data-toggle='modal' data-target='#orderItem" . htmlspecialchars($order['orderId']) . "'>
+                                        <div class='card-body'>
+                                            <h5 class='card-title'>Order #" . htmlspecialchars($order['orderId']) . "</h5>
+                                            <p class='card-text'>Ordered on " . date('M d, Y', strtotime($order['orderDate'])) . "</p>
+                                            <p class='card-text'>Total: PHP " . number_format($order['amount'], 2) . "</p>
+                                            <p class='card-text text-muted'>" . $statusMessage . "</p>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>";
+                                </div>";
                         }
-
+                        if ($result->num_rows === 0) {
+                            echo '
+                                            <div class="text-center w-100">
+                                                <p>No inactive orders found.</p>
+                                                <p><a href="/cart.php" class="btn btn-primary">Checkout at Cart</a>  or  <a href="/menu.php" class="btn btn-primary">Browse Menu</a></p>
+                                            </div>';
+                        }
                         ?>
                     </div>
                 </div>
@@ -274,10 +256,13 @@
         </div>
     <?php endif; ?>
 
-
     <?php require 'partials/_footer.php'; ?>
 
-
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var countdownElements = document.querySelectorAll('.countdown');
@@ -290,10 +275,7 @@
                     if (timeLeft <= 0) {
                         clearInterval(timerId);
                         span.textContent = '00:00';
-                        // Automatically update order status to cancelled if not already done
-                        if (!countdown.closest('.order-card').classList.contains('cancelled')) {
-                            cancelOrder(orderId, true); // Pass true to indicate automatic cancellation
-                        }
+                        updateOrderStatusOnTimeout(orderId);
                     } else {
                         var minutes = Math.floor(timeLeft / 60);
                         var seconds = timeLeft % 60;
@@ -301,40 +283,43 @@
                         timeLeft--;
                     }
                 }, 1000);
+                pollOrderStatusUpdates(orderId, timerId); // Pass timerId to potentially clear it
             });
         });
 
-
-        function cancelOrder(orderId, automatic = false) {
+        function updateOrderStatusOnTimeout(orderId) {
             $.ajax({
-                url: '/partials/_cancelOrder.php',
+                url: '/partials/_checkOrderStatus.php',
                 type: 'POST',
                 data: {
-                    orderId: orderId,
-                    automatic: automatic
+                    orderId: orderId
                 },
                 success: function(response) {
-                    const card = document.querySelector(`[data-order-id='${orderId}']`);
-                    if (card) {
-                        moveToCancelledTab(card);
-                        console.log("Order canceled", response);
+                    var status = parseInt(response.orderStatus);
+                    if (![0, 1, 2, 3].includes(status)) {
+                        const card = document.querySelector(`[data-order-id='${orderId}']`);
+                        if (card) {
+                            moveToCancelledTab(card, status);
+                        }
                     }
                 },
                 error: function(error) {
-                    console.error("Failed to cancel order", error);
+                    console.error("Failed to update status on timeout", error);
                 }
             });
         }
 
-        function moveToCancelledTab(card) {
-            const cancelledTab = document.querySelector('#cancelled .row');
-            if (cancelledTab) {
-                card.querySelector('.countdown').remove();
-                cancelledTab.appendChild(card);
+        function moveToCancelledTab(card, status) {
+            if ([4, 5, 6].includes(status)) {
+                const cancelledTab = document.querySelector('#cancelled .row');
+                if (cancelledTab) {
+                    card.querySelector('.countdown').remove();
+                    cancelledTab.appendChild(card);
+                }
             }
         }
 
-        function pollOrderStatusUpdates(orderId) {
+        function pollOrderStatusUpdates(orderId, timerId) {
             setInterval(function() {
                 $.ajax({
                     url: '/partials/_checkOrderStatus.php',
@@ -343,7 +328,7 @@
                         orderId: orderId
                     },
                     success: function(response) {
-                        var status = response.orderStatus;
+                        var status = parseInt(response.orderStatus);
                         var statusText = response.statusText;
                         var orderCard = document.querySelector(`[data-order-id='${orderId}']`);
                         if (orderCard) {
@@ -355,11 +340,13 @@
                             }
                             statusElement.textContent = `Status: ${statusText}`;
 
-                            if (![0, 1, 2, 3, 4].includes(status)) {
+                            if (![0, 1, 2, 3].includes(status)) {
+                                clearInterval(timerId);
                                 var countdownElement = orderCard.querySelector('.countdown');
                                 if (countdownElement) {
                                     countdownElement.remove();
                                 }
+                                moveToCancelledTab(orderCard, status);
                             }
                         }
                     },
@@ -369,23 +356,7 @@
                 });
             }, 5000);
         }
-
-        // Call this function for each order on page load
-        document.querySelectorAll('.order-card').forEach(function(card) {
-            var orderId = card.getAttribute('data-order-id');
-            pollOrderStatusUpdates(orderId);
-        });
     </script>
-
-
-
-
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/bootstrap-show-password@1.2.1/dist/bootstrap-show-password.min.js"></script>
 </body>
 
 </html>

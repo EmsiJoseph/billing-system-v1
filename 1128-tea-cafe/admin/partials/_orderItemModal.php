@@ -46,7 +46,6 @@ while ($itemModalRow = mysqli_fetch_assoc($itemModalResult)) {
 foreach ($orders as $order) {
     $orderId = $order['orderId'];
     $orderStatus = getOrderStatusDescription($order['orderStatus']);
-    // Modal HTML setup
     echo "<div class='modal fade' id='orderItem<?php echo $orderId; ?>' tabindex='-1' role='dialog' aria-labelledby='orderItemLabel<?php echo $orderId; ?>' aria-hidden='true'>";
     echo "<div class='modal-dialog modal-dialog-centered modal-lg' role='document'>";
     echo "<div class='modal-content'>";
