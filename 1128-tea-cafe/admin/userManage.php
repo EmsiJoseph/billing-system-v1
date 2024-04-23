@@ -13,7 +13,6 @@
                     <thead style="background-color: rgb(111 202 203);">
                         <tr>
                             <th>UserId</th>
-                            <th style="width:7%">Photo</th>
                             <th>Nickname</th>
                             <th>Name</th>
                             <th>Email</th>
@@ -42,7 +41,6 @@
 
                             echo '<tr>
                                     <td>' . $Id . '</td>
-                                    <td><img src="/1128-tea-cafe/img/person-' . $Id . '.jpg" alt="image for this user" onError="this.src =\'/1128-tea-cafe/img/profilePic.jpg\'" width="100px" height="100px"></td>
                                     <td>' . $nickname . '</td>
                                     <td>
                                         <p>First Name : <b>' . $firstName . '</b></p>
@@ -88,7 +86,7 @@
             <div class="modal-body">
                 <form action="partials/_userManage.php" method="post">
                     <div class="form-group">
-                        <b><label for="nickname">nickname</label></b>
+                        <b><label for="nickname">Nickname</label></b>
                         <input class="form-control" id="nickname" name="nickname" placeholder="Choose a unique nickname" type="text" required minlength="3" maxlength="11">
                     </div>
                     <div class="form-row">
@@ -128,7 +126,7 @@
                         <input class="form-control" id="password" name="password" placeholder="Enter Password" type="password" required data-toggle="password" minlength="4" maxlength="21">
                     </div>
                     <div class="form-group">
-                        <b><label for="password1">Renter Password:</label></b>
+                        <b><label for="password1">Reenter Password:</label></b>
                         <input class="form-control" id="cpassword" name="cpassword" placeholder="Renter Password" type="password" required data-toggle="password" minlength="4" maxlength="21">
                     </div>
                     <button type="submit" name="createUser" class="btn btn-success">Submit</button>
@@ -162,81 +160,60 @@ while ($userRow = mysqli_fetch_assoc($userResult)) {
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
-
-                    <div class="text-left my-2 row" style="border-bottom: 2px solid #dee2e6;">
-                        <div class="form-group col-md-8">
-                            <form action="partials/_userManage.php" method="post" enctype="multipart/form-data">
-                                <b><label for="image">Profile Picture</label></b>
-                                <input type="file" name="userimage" id="userimage" accept=".jpg" class="form-control" required style="border:none;">
-                                <small id="Info" class="form-text text-muted mx-3">Please .jpg file upload.</small>
-                                <input type="hidden" id="userId" name="userId" value="<?php echo $Id; ?>">
-                                <button type="submit" class="btn btn-success mt-3" name="updateProfilePhoto">Update Img</button>
-                            </form>
+                < <form action="partials/_userManage.php" method="post">
+                    <div class="form-group">
+                        <b><label for="nickname">Nickname</label></b>
+                        <input class="form-control" id="nickname" name="nickname" value="<?php echo $name; ?>" type="text" disabled>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <b><label for="firstName">First Name:</label></b>
+                            <input type="text" class="form-control" id="firstName" name="firstName" value="<?php echo $firstName; ?>" required>
                         </div>
-                        <div class="form-group col-md-4">
-                            <img src="/1128-tea-cafe/img/person-<?php echo $Id; ?>.jpg" alt="Profile Photo" width="100" height="100" onError="this.src ='/1128-tea-cafe/img/profilePic.jpg'">
-                            <form action="partials/_userManage.php" method="post">
-                                <input type="hidden" id="userId" name="userId" value="<?php echo $Id; ?>">
-                                <button type="submit" class="btn btn-success mt-2" name="removeProfilePhoto">Remove Img</button>
-                            </form>
+                        <div class="form-group col-md-6">
+                            <b><label for="lastName">Last name:</label></b>
+                            <input type="text" class="form-control" id="lastName" name="lastName" value="<?php echo $lastName; ?>" required>
                         </div>
                     </div>
-
-                    <form action="partials/_userManage.php" method="post">
-                        <div class="form-group">
-                            <b><label for="nickname">nickname</label></b>
-                            <input class="form-control" id="nickname" name="nickname" value="<?php echo $name; ?>" type="text" disabled>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
-                                <b><label for="firstName">First Name:</label></b>
-                                <input type="text" class="form-control" id="firstName" name="firstName" value="<?php echo $firstName; ?>" required>
-                            </div>
-                            <div class="form-group col-md-6">
-                                <b><label for="lastName">Last name:</label></b>
-                                <input type="text" class="form-control" id="lastName" name="lastName" value="<?php echo $lastName; ?>" required>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <b><label for="email">Email:</label></b>
-                            <input type="email" class="form-control" id="email" name="email" value="<?php echo $email; ?>" required>
-                        </div>
-                        <div class="form-group row my-0">
-                            <div class="form-group col-md-6 my-0">
-                                <b><label for="phone">Phone No:</label></b>
-                                <div class="input-group mb-3">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text" id="basic-addon">+91</span>
-                                    </div>
-                                    <input type="tel" class="form-control" id="phone" name="phone" value="<?php echo $phone; ?>" required pattern="[0-9]{10}" maxlength="10">
+                    <div class="form-group">
+                        <b><label for="email">Email:</label></b>
+                        <input type="email" class="form-control" id="email" name="email" value="<?php echo $email; ?>" required>
+                    </div>
+                    <div class="form-group row my-0">
+                        <div class="form-group col-md-6 my-0">
+                            <b><label for="phone">Phone No:</label></b>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="basic-addon">+91</span>
                                 </div>
-                            </div>
-                            <div class="form-group col-md-6 my-0">
-                                <b><label for="userType">Type:</label></b>
-                                <select name="userType" id="userType" class="custom-select browser-default" required>
-                                    <?php
-                                    if ($userType == 1) {
-                                    ?>
-                                        <option value="0">User</option>
-                                        <option value="1" selected>Admin</option>
-                                    <?php
-                                    } else {
-                                    ?>
-                                        <option value="0" selected>User</option>
-                                        <option value="1">Admin</option>
-                                    <?php
-                                    }
-                                    ?>
-                                </select>
+                                <input type="tel" class="form-control" id="phone" name="phone" value="<?php echo $phone; ?>" required pattern="[0-9]{10}" maxlength="10">
                             </div>
                         </div>
-                        <input type="hidden" id="userId" name="userId" value="<?php echo $Id; ?>">
-                        <button type="submit" name="editUser" class="btn btn-success">Update</button>
+                        <div class="form-group col-md-6 my-0">
+                            <b><label for="userType">Type:</label></b>
+                            <select name="userType" id="userType" class="custom-select browser-default" required>
+                                <?php
+                                if ($userType == 1) {
+                                ?>
+                                    <option value="0">User</option>
+                                    <option value="1" selected>Admin</option>
+                                <?php
+                                } else {
+                                ?>
+                                    <option value="0" selected>User</option>
+                                    <option value="1">Admin</option>
+                                <?php
+                                }
+                                ?>
+                            </select>
+                        </div>
+                    </div>
+                    <input type="hidden" id="userId" name="userId" value="<?php echo $Id; ?>">
+                    <button type="submit" name="editUser" class="btn btn-success">Update</button>
                     </form>
-                </div>
             </div>
         </div>
+    </div>
     </div>
 
 <?php

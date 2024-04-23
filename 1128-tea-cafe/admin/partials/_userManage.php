@@ -5,7 +5,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (isset($_POST['removeUser'])) {
         $Id = $_POST["Id"];
-        $sql = "DELETE FROM `users` WHERE `id`='$Id'";
+        $sql = "DELETE FROM `users` WHERE `userId`='$Id'";
         $result = mysqli_query($conn, $sql);
         echo "<script>alert('Removed');
             window.location=document.referrer;
@@ -22,12 +22,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $password = $_POST["password"];
         $cpassword = $_POST["cpassword"];
 
-        // Check whether this nickname exists
-        $existSql = "SELECT * FROM `users` WHERE nickname = '$nickname'";
+        // Check whether this email exists
+        $existSql = "SELECT * FROM `users` WHERE email = '$email'";
         $result = mysqli_query($conn, $existSql);
         $numExistRows = mysqli_num_rows($result);
         if ($numExistRows > 0) {
-            echo "<script>alert('nickname Already Exists');
+            echo "<script>alert('Email Already Exists');
                     window.location=document.referrer;
                 </script>";
         } else {

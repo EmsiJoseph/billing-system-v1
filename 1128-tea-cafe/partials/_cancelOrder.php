@@ -1,16 +1,22 @@
 <?php
-// Connection setup
 require '_dbconnect.php';
 
-if (isset($_POST['orderId']) && is_numeric($_POST['orderId'])) {
-    $orderId = intval($_POST['orderId']);
+if (isset($_POST['orderId'])) {
+    $orderId = $_POST['orderId'];
 
-    $stmt = $conn->prepare("UPDATE orders SET orderStatus = 6 WHERE orderId = ?");
-    $stmt->bind_param("i", $orderId);
-    if ($stmt->execute()) {
-        echo "Order #$orderId cancelled successfully.";
+    echo "Received orderId: " . $orderId;
+
+    $stmt = $conn->prepare("UPDATE orders SET orderStatus = '6' WHERE orderId = ?");
+    if ($stmt === false) {
+        echo "Prepare failed: (" . $conn->errno . ") " . $conn->error;
     } else {
-        echo "Error cancelling order.";
+        $stmt->bind_param("s", $orderId);
+        if ($stmt->execute()) {
+            echo "Order #$orderId cancelled successfully.";
+        } else {
+            echo "Execute failed: (" . $stmt->errno . ") " . $stmt->error;
+        }
+        $stmt->close();
     }
 } else {
     echo "Invalid request.";

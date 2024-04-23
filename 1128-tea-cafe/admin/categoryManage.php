@@ -1,34 +1,13 @@
 <div class="container-fluid" style="margin-top:98px">
-    <div class="col-lg-12">
-        <div class="row">
-            <div class="col-md-4">
-                <form action="partials/_categoryManage.php" method="post" enctype="multipart/form-data">
-                    <div class="card">
-                        <div class="card-header" style="background-color: rgb(111 202 203);">
-                            Create New Category
-                        </div>
-                        <div class="card-body">
-                            <div class="form-group">
-                                <label class="control-label">Category Name: </label>
-                                <input type="text" class="form-control" name="name" required>
-                            </div>
-                            <div class="form-group">
-                                <label class="control-label">Category Description: </label>
-                                <input type="text" class="form-control" name="desc" required>
-                            </div>
-                        </div>
-                        <div class="card-footer">
-                            <button type="submit" name="createCategory" class="btn btn-primary">Create</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <!-- FORM Panel -->
 
-            <!-- Table Panel -->
-            <div class="col-md-8 mb-3">
-                <div class="card">
-                    <div class="card-body">
+
+    <div class="container" style="margin-top: 98px;">
+
+        <!-- Table Panel -->
+        <div class="col-md-8 mx-auto d-block mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
                         <table class="table table-bordered table-hover mb-0">
                             <thead style="background-color: rgb(111 202 203);">
                                 <tr>
@@ -45,22 +24,16 @@
                                     $catId = $row['categoryId'];
                                     $catName = $row['categoryName'];
                                     $catDesc = $row['categoryDesc'];
-
                                     echo '<tr>
-                                        <td class="text-center"><b>' . $catId . '</b></td>
-                                        <td>
-                                            <p>Name : <b>' . $catName . '</b></p>
-                                            <p>Description : <b class="truncate">' . $catDesc . '</b></p>
-                                        </td>
-                                        <td class="text-center">
-                                            <div class="row mx-auto" style="width:112px">
-                                            <button class="btn btn-sm btn-primary edit_cat" type="button" data-toggle="modal" data-target="#updateCat' . $catId . '">Edit</button>
-                                            <form action="partials/_categoryManage.php" method="POST">
-                                                <button name="removeCategory" class="btn btn-sm btn-danger" style="margin-left:9px;">Delete</button>
-                                                <input type="hidden" name="catId" value="' . $catId . '">
-                                            </form></div>
-                                        </td>
-                                    </tr>';
+                                          <td class="text-center"><b>' . $catId . '</b></td>
+                                          <td>
+                                              <p>Name : <b>' . $catName . '</b></p>
+                                              <p>Description : <b class="truncate">' . $catDesc . '</b></p>
+                                          </td>
+                                          <td class="text-center">
+                                              <button class="btn btn-sm btn-primary edit_cat" type="button" data-toggle="modal" data-target="#updateCat' . $catId . '">Edit</button>
+                                          </td>
+                                      </tr>';
                                 }
                                 ?>
                             </tbody>
@@ -68,9 +41,10 @@
                     </div>
                 </div>
             </div>
-            <!-- Table Panel -->
         </div>
+        <!-- Table Panel -->
     </div>
+</div>
 </div>
 
 

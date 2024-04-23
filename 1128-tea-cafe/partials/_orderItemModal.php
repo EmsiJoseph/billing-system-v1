@@ -1,6 +1,6 @@
 <?php
 
-include 'partials/_dbconnect.php';
+include '_dbconnect.php';
 
 function getOrderStatusDescription($status)
 {
@@ -88,7 +88,7 @@ foreach ($orders as $order) {
                 </div>
                 <div class="modal-footer">
                     <?php if (!in_array($order['orderStatus'], [4, 5, 6])) : ?>
-                        <button onclick='cancelOrder(<?php echo $orderId; ?>)' class='btn btn-danger'>Cancel Order</button>
+                        <button class='btn btn-danger cancel-order-btn' data-order-id='<?php echo $orderId; ?>'>Cancel Order</button>
                     <?php endif; ?>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
@@ -96,26 +96,40 @@ foreach ($orders as $order) {
         </div>
     </div>
 
-    <script>
-        function cancelOrder(orderId) {
-            if (confirm("Are you sure you want to cancel this order?")) {
-                $.ajax({
-                    url: '_cancelOrder.php',
-                    type: 'POST',
-                    data: {
-                        orderId: orderId
-                    },
-                    success: function(response) {
-                        alert("Order cancelled successfully.");
-                        location.reload();
-                    },
-                    error: function() {
-                        alert("Error cancelling order.");
-                    }
-                });
-            }
-        }
-    </script>
+
 <?php
 }
 ?>
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script>
+    function cancelOrder(orderId) {
+        console.log("Cancelling order with orderId:", orderId);
+        if (confirm("Are you sure you want to cancel this order?")) {
+            $.ajax({
+                url: '/partials/_cancelOrder.php',
+                type: 'POST',
+                data: {
+                    orderId: orderId
+                },
+                success: function(response) {
+                    console.log("Order cancellation response:", response);
+                    alert("Order cancelled successfully: " + response);
+                    location.reload();
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.error("Error cancelling order:", textStatus, errorThrown);
+                    alert("Error cancelling order: " + textStatus + ", " + errorThrown);
+                }
+            });
+        }
+    }
+
+
+    $(document).ready(function() {
+        $('body').on('click', '.cancel-order-btn', function() {
+            var orderId = $(this).data('order-id');
+            cancelOrder(orderId);
+        });
+    });
+</script>
