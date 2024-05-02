@@ -24,7 +24,7 @@ while ($itemModalRow = mysqli_fetch_assoc($itemModalResult)) {
                             <b><label for="name">Order Status</label></b>
                             <div class="row mx-2">
                                 <input class="form-control col-md-3" id="status" name="status" value="<?php echo $orderStatus; ?>" type="number" min="0" max="6" required>
-                                <button type="button" class="btn btn-secondary ml-1" data-container="body" data-toggle="popover" title="User Types" data-placement="bottom" data-html="true" data-content="0=Order Placed.<br> 1=Order Confirmed.<br> 2=Preparing your Order.<br> 3=Your order is on the way!<br> 4=Order Delivered.<br> 5=Order Denied.<br> 6=Order Cancelled.">
+                                <button type="button" class="btn btn-secondary ml-1" data-container="body" data-toggle="popover" title="User Types" data-placement="bottom" data-html="true" data-content="1=Order Placed.<br> 2=Preparing your Order.<br> 3=Your order is on the way!<br> 4=Order Delivered.<br> 5=Order Denied.<br> 6=Order Cancelled.">
                                     <i class="fas fa-info"></i>
                                 </button>
                             </div>
@@ -40,7 +40,7 @@ while ($itemModalRow = mysqli_fetch_assoc($itemModalResult)) {
                     $deliveryBoyName = $deliveryDetailRow['deliveryBoyName'];
                     $deliveryBoyPhoneNo = $deliveryDetailRow['deliveryBoyPhoneNo'];
                     $deliveryTime = $deliveryDetailRow['deliveryTime'];
-                    if ($orderStatus > 0 && $orderStatus < 5) {
+                    if ($orderStatus > 1 && $orderStatus < 5) {
                     ?>
                         <form action="partials/_orderManage.php" method="post">
                             <div class="text-left my-2">

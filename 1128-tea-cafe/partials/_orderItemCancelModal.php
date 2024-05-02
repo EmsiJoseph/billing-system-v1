@@ -5,8 +5,7 @@ include 'partials/_dbconnect.php';
 function getOrderStatusDescription($status)
 {
     $statuses = [
-        '0' => 'Order Placed',
-        '1' => 'Order Confirmed',
+        '1' => 'Order Placed',
         '2' => 'Preparing your Order',
         '3' => 'Your order is ready, claim it on the counter',
         '4' => 'Order Received',
@@ -24,7 +23,7 @@ $itemModalSql = "SELECT o.orderId, o.orderDate, o.amount, oi.prodId, oi.size, o.
                  WHERE o.userId = $userId
                  ORDER BY o.orderDate DESC";
 $itemModalResult = mysqli_query($conn, $itemModalSql);
-$orders = []; // Store orders by ID for modal generation
+$orders = [];
 
 while ($itemModalRow = mysqli_fetch_assoc($itemModalResult)) {
     $orderId = $itemModalRow['orderId'];
@@ -46,7 +45,6 @@ foreach ($orders as $order) {
     $orderStatus = getOrderStatusDescription($order['orderStatus']);
 ?>
 
-    <!-- Order Items Modal -->
     <div class="modal fade" id="orderItem<?php echo $orderId; ?>" tabindex="-1" role="dialog" aria-labelledby="orderItemLabel<?php echo $orderId; ?>" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content">

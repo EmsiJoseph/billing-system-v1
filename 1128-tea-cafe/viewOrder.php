@@ -174,7 +174,7 @@
                 <div id="claimable" class="tab-pane fade show active">
                     <div class="row">
                         <?php
-                        $stmt = $conn->prepare("SELECT orderId, amount, orderDate, UNIX_TIMESTAMP(orderDate) AS timestamp, orderStatus FROM orders WHERE userId = ? AND orderStatus NOT IN (4, 5, 6) ORDER BY orderDate DESC");
+                        $stmt = $conn->prepare("SELECT orderId, amount, orderDate, UNIX_TIMESTAMP(orderDate) AS timestamp, orderStatus FROM orders WHERE userId = ? AND orderStatus NOT IN ('4', '5', '6') ORDER BY orderDate DESC");
                         $stmt->bind_param("i", $userId);
                         $stmt->execute();
                         $result = $stmt->get_result();
@@ -184,7 +184,7 @@
                             $minutes = floor($timeLeft / 60);
                             $seconds = $timeLeft % 60;
                             $statusText = getOrderStatusDescription($order['orderStatus']);
-                            if ($order['orderStatus'] == 0) {
+                            if ($order['orderStatus'] == 1) {
                                 echo "<div class='col-md-6 mb-4'>
                                     <div class='card order-card' data-toggle='modal' data-target='#orderItem" . htmlspecialchars($order['orderId']) . "'>
                                         <div class='card-body'>
@@ -219,7 +219,7 @@
                 <div id="cancelled" class="tab-pane fade">
                     <div class="row">
                         <?php
-                        $stmt = $conn->prepare("SELECT orderId, amount, orderDate, orderStatus FROM orders WHERE userId = ? AND orderStatus IN (4, 5, 6) ORDER BY orderDate DESC");
+                        $stmt = $conn->prepare("SELECT orderId, amount, orderDate, orderStatus FROM orders WHERE userId = ? AND orderStatus IN ('4', '5', '6') ORDER BY orderDate DESC");
                         $stmt->bind_param("i", $userId);
                         $stmt->execute();
                         $result = $stmt->get_result();
@@ -258,8 +258,6 @@
 
     <?php require 'partials/_footer.php'; ?>
 
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
@@ -283,7 +281,7 @@
                         timeLeft--;
                     }
                 }, 1000);
-                pollOrderStatusUpdates(orderId, timerId); // Pass timerId to potentially clear it
+                pollOrderStatusUpdates(orderId, timerId);
             });
         });
 
@@ -296,7 +294,7 @@
                 },
                 success: function(response) {
                     var status = parseInt(response.orderStatus);
-                    if (![0, 1, 2, 3].includes(status)) {
+                    if (!['1', '2', '3'].includes(status)) {
                         const card = document.querySelector(`[data-order-id='${orderId}']`);
                         if (card) {
                             moveToCancelledTab(card, status);
@@ -310,7 +308,7 @@
         }
 
         function moveToCancelledTab(card, status) {
-            if ([4, 5, 6].includes(status)) {
+            if (['4', '5', '6'].includes(status)) {
                 const cancelledTab = document.querySelector('#cancelled .row');
                 if (cancelledTab) {
                     card.querySelector('.countdown').remove();
@@ -340,7 +338,7 @@
                             }
                             statusElement.textContent = `Status: ${statusText}`;
 
-                            if (![0, 1, 2, 3].includes(status)) {
+                            if (!['1', '2', '3'].includes(status)) {
                                 clearInterval(timerId);
                                 var countdownElement = orderCard.querySelector('.countdown');
                                 if (countdownElement) {

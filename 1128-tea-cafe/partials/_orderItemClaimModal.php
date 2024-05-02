@@ -5,8 +5,7 @@ include 'partials/_dbconnect.php';
 function getOrderStatusDescription($status)
 {
     $statuses = [
-        '0' => 'Order Placed',
-        '1' => 'Order Confirmed',
+        '1' => 'Order Placed',
         '2' => 'Preparing your Order',
         '3' => 'Your order is ready, claim it on the counter',
         '4' => 'Order Received',

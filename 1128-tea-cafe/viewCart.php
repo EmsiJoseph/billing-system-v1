@@ -129,11 +129,9 @@
             </div>
         </div>
     <?php else : ?>
-        <div class="container" style="min-height : 610px;">
+        <div class="container" style="min-height: 610px;">
             <div class="alert alert-info my-3">
-                <font style="font-size:22px">
-                    <center>Before checkout you need to <strong><a class="alert-link" data-toggle="modal" data-target="#loginModal">Login</a></strong></center>
-                </font>
+                <strong>You need to <a href="#" data-toggle="modal" data-target="#loginModal">Login</a> to view your orders.</strong>
             </div>
         </div>
     <?php endif; ?>

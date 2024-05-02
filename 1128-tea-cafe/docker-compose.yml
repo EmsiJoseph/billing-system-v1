@@ -8,8 +8,6 @@ services:
       MYSQL_PASSWORD: password
       MYSQL_ALLOW_EMPTY_PASSWORD: "no"
       MYSQL_ROOT_HOST: "%"
-    volumes:
-      - "./db:/docker-entrypoint-initdb.d"
 
   www:
     image: php:apache

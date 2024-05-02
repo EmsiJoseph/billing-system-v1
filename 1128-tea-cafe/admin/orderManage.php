@@ -2,13 +2,12 @@
 function getOrderStatusDescription($status)
 {
     $statuses = [
-        '0' => 'Order Placed',
-        '1' => 'Order Confirmed',
-        '2' => 'Preparing your Order',
+        '1' => 'Order Placed',
+        '2' => 'Preparing Order',
         '3' => 'Ready for Pickup',
         '4' => 'Order Received',
-        '5' => 'Order Denied',
-        '6' => 'Cancelled'
+        '5' => 'Deny Order',
+        '6' => 'Cancel Order'
     ];
     return $statuses[$status] ?? 'Unknown Status';
 }
@@ -19,13 +18,12 @@ $sql = "SELECT orders.*, users.email FROM orders JOIN users ON orders.userId = u
 $result = mysqli_query($conn, $sql);
 
 $statuses = [
-    '0' => 'Order Placed',
-    '1' => 'Order Confirmed',
-    '2' => 'Preparing your Order',
+    '1' => 'Order Placed',
+    '2' => 'Preparing Order',
     '3' => 'Ready for Pickup',
     '4' => 'Order Received',
-    '5' => 'Order Denied',
-    '6' => 'Cancelled'
+    '5' => 'Deny Order',
+    '6' => 'Cancel Order'
 ];
 ?>
 
@@ -229,7 +227,6 @@ if (isset($result)) {
         $orderStatusDesc = getOrderStatusDescription($orderStatus);
         $orderDate = date('F j, Y', strtotime($row['orderDate']));
 ?>
-        <!-- Order Items Modal -->
         <div class="modal fade" id="orderModal<?= $orderId; ?>" tabindex="-1" role="dialog" aria-labelledby="orderModalLabel<?= $orderId; ?>" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">

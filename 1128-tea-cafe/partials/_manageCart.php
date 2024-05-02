@@ -10,10 +10,17 @@ error_log("Script is executing.");
 
 function generateOrderId($conn)
 {
-    $date = new DateTime();
-    $orderNumber = $conn->query("SELECT COUNT(*) FROM `orders`")->fetch_row()[0] + 1;
-    $uniqueCode = substr(md5(uniqid(rand(), true)), 0, 5);
-    return "ORD" . $date->format("YmdHis") . "-" . str_pad($orderNumber, 5, '0', STR_PAD_LEFT) . "-" . $uniqueCode;
+    do {
+        $uniqueCode = substr(md5(uniqid(rand(), true)), 0, 5);
+        $query = "SELECT COUNT(*) FROM `orders` WHERE orderId = ?";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("s", $uniqueCode);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $exists = $result->fetch_row()[0];
+    } while ($exists > 0);
+
+    return $uniqueCode;
 }
 
 function handleCheckout($conn, $userId)
@@ -24,7 +31,7 @@ function handleCheckout($conn, $userId)
     $conn->begin_transaction();
     try {
         $orderId = generateOrderId($conn);
-        $insertOrderStmt = $conn->prepare("INSERT INTO `orders` (orderId, userId, amount, paymentMode, orderStatus, orderDate) VALUES (?, ?, ?, ?, '0', NOW())");
+        $insertOrderStmt = $conn->prepare("INSERT INTO `orders` (orderId, userId, amount, paymentMode, orderStatus, orderDate) VALUES (?, ?, ?, ?, '1', NOW())");
         $insertOrderStmt->bind_param("siss", $orderId, $userId, $totalPrice, $paymentMode);
         $insertOrderStmt->execute();
 
