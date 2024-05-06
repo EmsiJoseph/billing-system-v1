@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: db:3306
--- Generation Time: Apr 23, 2024 at 03:32 AM
+-- Generation Time: May 06, 2024 at 04:20 AM
 -- Server version: 8.3.0
 -- PHP Version: 8.2.8
 
@@ -20,6 +20,29 @@ SET time_zone = "+00:00";
 --
 -- Database: `billing-system-db`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `analytics`
+--
+
+CREATE TABLE `analytics` (
+  `id` int NOT NULL,
+  `date` date NOT NULL,
+  `total_orders` int DEFAULT '0',
+  `total_revenue` decimal(10,2) DEFAULT '0.00',
+  `daily_revenue` decimal(10,2) DEFAULT '0.00',
+  `weekly_revenue` decimal(10,2) DEFAULT '0.00',
+  `monthly_revenue` decimal(10,2) DEFAULT '0.00'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `analytics`
+--
+
+INSERT INTO `analytics` (`id`, `date`, `total_orders`, `total_revenue`, `daily_revenue`, `weekly_revenue`, `monthly_revenue`) VALUES
+(24, '2024-05-06', 6, 0.00, 400.00, 0.00, 0.00);
 
 -- --------------------------------------------------------
 
@@ -96,6 +119,14 @@ CREATE TABLE `orderitems` (
 -- Dumping data for table `orderitems`
 --
 
+INSERT INTO `orderitems` (`id`, `orderId`, `prodId`, `size`, `itemQuantity`, `price`) VALUES
+(34, 'ORD20240501182112-00001-23b05', 6, 'Large', 2, 55.00),
+(35, '1b69d', 6, 'Large', 1, 55.00),
+(36, 'a76a7', 6, 'Large', 1, 55.00),
+(37, '2c0cf', 6, 'Large', 1, 55.00),
+(38, 'e9997', 31, 'Large', 1, 45.00),
+(39, 'b2578', 23, 'Large', 3, 45.00),
+(40, '2240e', 31, 'Large', 1, 45.00);
 
 -- --------------------------------------------------------
 
@@ -108,7 +139,7 @@ CREATE TABLE `orders` (
   `userId` int NOT NULL,
   `amount` int NOT NULL,
   `paymentMode` enum('0','1','2') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '2' COMMENT '0=Maya, 1=Gcash, 2=Cash',
-  `orderStatus` enum('0','1','2','3','4','5','6') NOT NULL DEFAULT '0' COMMENT '0=Order Placed, 1=Order Confirmed, 2=Preparing your Order, 3=Your order is ready for pick-up!, 4=Order Received, 5=Order Denied, 6=Order Cancelled.',
+  `orderStatus` enum('1','2','3','4','5','6') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '1' COMMENT '1=Order Placed, 2=Preparing your Order, 3=Your order is ready for pick-up!, 4=Order Received, 5=Order Denied, 6=Order Cancelled.',
   `orderDate` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -116,6 +147,12 @@ CREATE TABLE `orders` (
 -- Dumping data for table `orders`
 --
 
+INSERT INTO `orders` (`orderId`, `userId`, `amount`, `paymentMode`, `orderStatus`, `orderDate`) VALUES
+('1b69d', 11, 55, '2', '3', '2024-05-01 19:24:45'),
+('2240e', 11, 45, '2', '6', '2024-05-06 12:13:04'),
+('2c0cf', 11, 55, '2', '4', '2024-05-01 22:11:51'),
+('b2578', 11, 90, '2', '3', '2024-05-06 12:08:28'),
+('e9997', 11, 45, '2', '6', '2024-05-06 12:06:19');
 
 -- --------------------------------------------------------
 
@@ -166,6 +203,29 @@ INSERT INTO `prod_sizes` (`prodId`, `size`, `price`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `queue`
+--
+
+CREATE TABLE `queue` (
+  `queueId` int NOT NULL,
+  `orderId` varchar(50) NOT NULL,
+  `queueNumber` int NOT NULL,
+  `dateAdded` date NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `queue`
+--
+
+INSERT INTO `queue` (`queueId`, `orderId`, `queueNumber`, `dateAdded`) VALUES
+(6, '1b69d', 1, '2024-05-06'),
+(7, '2c0cf', 2, '2024-05-06'),
+(8, 'b2578', 3, '2024-05-06'),
+(9, '2240e', 4, '2024-05-06');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `sitedetail`
 --
 
@@ -209,8 +269,9 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`userId`, `nickname`, `firstName`, `lastName`, `email`, `phone`, `userType`, `password`, `joinDate`) VALUES
-(1, 'adminuser', 'Admin', 'User', 'admin@gmail.com', 9876543210, '1', 'admin', '2024-04-20 00:31:39'),
-
+(1, 'adminuser', 'Admin', 'User', 'admin@gmail.com', 9876543210, '1', '2yn.4fvaTgedM', '2024-04-20 00:31:39'),
+(10, '', 'Mc Joseph', 'Agbanlog', 'mcagbanlog@gmail.com', 9762623231, '1', '2yLASFbyQ9/mA', '2024-05-01 18:14:06'),
+(11, 'user', 'user', 'user', 'user@gmail.com', 9762623231, '0', '2y3Hotju5Vl5E', '2024-05-01 18:19:32');
 
 -- --------------------------------------------------------
 
@@ -230,6 +291,13 @@ CREATE TABLE `viewcart` (
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `analytics`
+--
+ALTER TABLE `analytics`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_date` (`date`);
 
 --
 -- Indexes for table `categories`
@@ -282,6 +350,13 @@ ALTER TABLE `prod_sizes`
   ADD PRIMARY KEY (`prodId`,`size`);
 
 --
+-- Indexes for table `queue`
+--
+ALTER TABLE `queue`
+  ADD PRIMARY KEY (`queueId`),
+  ADD KEY `orderId` (`orderId`);
+
+--
 -- Indexes for table `sitedetail`
 --
 ALTER TABLE `sitedetail`
@@ -306,6 +381,12 @@ ALTER TABLE `viewcart`
 --
 
 --
+-- AUTO_INCREMENT for table `analytics`
+--
+ALTER TABLE `analytics`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+
+--
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
@@ -327,13 +408,19 @@ ALTER TABLE `contactreply`
 -- AUTO_INCREMENT for table `orderitems`
 --
 ALTER TABLE `orderitems`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 
 --
 -- AUTO_INCREMENT for table `prod`
 --
 ALTER TABLE `prod`
   MODIFY `prodId` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+
+--
+-- AUTO_INCREMENT for table `queue`
+--
+ALTER TABLE `queue`
+  MODIFY `queueId` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `sitedetail`
@@ -345,13 +432,13 @@ ALTER TABLE `sitedetail`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `userId` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `userId` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `viewcart`
 --
 ALTER TABLE `viewcart`
-  MODIFY `cartItemId` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
+  MODIFY `cartItemId` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
 
 --
 -- Constraints for dumped tables
@@ -365,46 +452,10 @@ ALTER TABLE `contact`
   ADD CONSTRAINT `contact_ibfk_2` FOREIGN KEY (`orderId`) REFERENCES `orders` (`orderId`);
 
 --
--- Constraints for table `contactreply`
+-- Constraints for table `queue`
 --
-ALTER TABLE `contactreply`
-  ADD CONSTRAINT `contactreply_ibfk_1` FOREIGN KEY (`contactId`) REFERENCES `contact` (`contactId`) ON DELETE CASCADE,
-  ADD CONSTRAINT `contactreply_ibfk_2` FOREIGN KEY (`userId`) REFERENCES `users` (`userId`);
-
---
--- Constraints for table `orderitems`
---
-ALTER TABLE `orderitems`
-  ADD CONSTRAINT `fk_orderitems_product` FOREIGN KEY (`prodId`) REFERENCES `prod` (`prodId`) ON DELETE CASCADE,
-  ADD CONSTRAINT `orderitems_ibfk_1` FOREIGN KEY (`orderId`) REFERENCES `orders` (`orderId`),
-  ADD CONSTRAINT `orderitems_ibfk_2` FOREIGN KEY (`prodId`) REFERENCES `prod` (`prodId`);
-
---
--- Constraints for table `orders`
---
-ALTER TABLE `orders`
-  ADD CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `users` (`userId`);
-
---
--- Constraints for table `prod`
---
-ALTER TABLE `prod`
-  ADD CONSTRAINT `fk_category` FOREIGN KEY (`prodCategoryId`) REFERENCES `categories` (`categoryId`) ON DELETE CASCADE,
-  ADD CONSTRAINT `prod_ibfk_1` FOREIGN KEY (`prodCategoryId`) REFERENCES `categories` (`categoryId`);
-
---
--- Constraints for table `prod_sizes`
---
-ALTER TABLE `prod_sizes`
-  ADD CONSTRAINT `fk_prod_sizes_product` FOREIGN KEY (`prodId`) REFERENCES `prod` (`prodId`) ON DELETE CASCADE,
-  ADD CONSTRAINT `prod_sizes_ibfk_1` FOREIGN KEY (`prodId`) REFERENCES `prod` (`prodId`) ON DELETE CASCADE;
-
---
--- Constraints for table `viewcart`
---
-ALTER TABLE `viewcart`
-  ADD CONSTRAINT `viewcart_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `users` (`userId`),
-  ADD CONSTRAINT `viewcart_ibfk_2` FOREIGN KEY (`prodId`) REFERENCES `prod` (`prodId`) ON DELETE CASCADE;
+ALTER TABLE `queue`
+  ADD CONSTRAINT `queue_ibfk_1` FOREIGN KEY (`orderId`) REFERENCES `orders` (`orderId`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

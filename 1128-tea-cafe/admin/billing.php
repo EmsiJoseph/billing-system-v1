@@ -70,51 +70,7 @@ while ($row = $result->fetch_assoc()) {
 
                 console.log("Input length:", inputLength);
 
-                function fetchData() {
-                    $.ajax({
-                        url: 'partials/_fetchUpdates.php',
-                        type: 'GET',
-                        dataType: 'json',
-                        success: function(data) {
-                            updateOrders(data);
-                        },
-                        error: function() {
-                            console.error('Failed to fetch data');
-                        }
-                    });
-                }
 
-                function updateOrders(data) {
-                    const incomingContainer = $('#incomingOrdersContainer');
-                    const preparingContainer = $('#preparingOrdersContainer');
-                    const readyContainer = $('#readyForPickupContainer');
-
-                    incomingContainer.empty();
-                    preparingContainer.empty();
-                    readyContainer.empty();
-
-                    data.forEach(order => {
-                        const orderElement = `<div class="card mb-3">
-                <div class="card-body">
-                    <h5>Order ID: ${order.orderId}</h5>
-                    <p>Total: PHP ${parseFloat(order.amount).toFixed(2)}</p>
-                    <h3 class="text-center text-${order.orderStatus === '3' ? 'success' : 'primary'}">${order.queueNumber}</h3>
-                </div>
-            </div>`;
-
-                        if (order.orderStatus === '1') {
-                            incomingContainer.append(orderElement);
-                        } else if (order.orderStatus === '2') {
-                            preparingContainer.append(orderElement);
-                        } else if (order.orderStatus === '3') {
-                            readyContainer.append(orderElement);
-                        }
-                    });
-                }
-
-                fetchData();
-
-                setInterval(fetchData, 1000);
             });
         });
     </script>
