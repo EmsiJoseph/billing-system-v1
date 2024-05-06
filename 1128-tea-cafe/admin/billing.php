@@ -30,7 +30,7 @@ if (!empty($alertMessage)) {
 
 $sql = "SELECT o.orderId, o.amount, o.orderStatus, LPAD(q.queueNumber, 3, '0') AS queueNumber, o.orderDate 
         FROM orders o
-        LEFT JOIN Queue q ON o.orderId = q.orderId
+        LEFT JOIN queue q ON o.orderId = q.orderId
         ORDER BY o.orderDate DESC";
 
 $result = $conn->query($sql);
@@ -106,11 +106,12 @@ while ($row = $result->fetch_assoc()) {
 </head>
 
 <body>
+    <br />
+    <br />
+    <br />
     <div class="container mt-4">
         <div class="input-background">
-            <br />
-            <br />
-            <br />
+
             <h2>Order Billing</h2>
             <form action="" method="POST" class="mb-3">
                 <div class="input-group">

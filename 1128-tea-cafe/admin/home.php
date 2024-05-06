@@ -5,43 +5,106 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <style>
+        .card {
+            margin-top: 20px;
+        }
+    </style>
 </head>
 
 <body>
     <div class="container mt-4">
-        <br />
-        <br />
-        <br />
-        <h2>Dashboard</h2>
         <div class="row">
-            <div class="col-md-4">
-                <h4>Total Orders Today</h4>
-                <div id="totalOrders"></div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Daily Revenue</h5>
+                        <p class="card-text" id="dailyRevenue">Loading...</p>
+                    </div>
+                </div>
             </div>
-            <div class="col-md-4">
-                <h4>Total Revenue Today</h4>
-                <div id="totalRevenue"></div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Weekly Revenue</h5>
+                        <p class="card-text" id="weeklyRevenue">Loading...</p>
+                    </div>
+                </div>
             </div>
-            <div class="col-md-4">
-                <h4>Top Selling Products Today</h4>
-                <ul id="topProducts"></ul>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Monthly Revenue</h5>
+                        <p class="card-text" id="monthlyRevenue">Loading...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Orders Today</h5>
+                        <p class="card-text" id="totalOrders">Loading...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <canvas id="salesOverTime"></canvas>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script>
         $(document).ready(function() {
-            $.getJSON('partials/_dashboardData.php', function(data) {
-                $('#totalOrders').text(data.total_orders + ' Orders');
-                $('#totalRevenue').text('PHP ' + parseFloat(data.total_revenue).toFixed(2));
+            function fetchData() {
+                $.ajax({
+                    url: 'dashboard_data.php',
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(data) {
+                        $('#dailyRevenue').text(`PHP ${parseFloat(data.daily_revenue).toFixed(2)}`);
+                        $('#weeklyRevenue').text(`PHP ${parseFloat(data.weekly_revenue).toFixed(2)}`);
+                        $('#monthlyRevenue').text(`PHP ${parseFloat(data.monthly_revenue).toFixed(2)}`);
+                        $('#totalOrders').text(data.total_orders);
 
-                let productsList = '';
-                data.top_products.forEach(function(product) {
-                    productsList += `<li>${product.prodName} - ${product.quantity_sold} Sold</li>`;
+                        var ctx = document.getElementById('salesOverTime').getContext('2d');
+                        var salesOverTime = new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                labels: data.labels,
+                                datasets: [{
+                                    label: 'Revenue Over Time',
+                                    data: data.revenue_over_time,
+                                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                                    borderColor: 'rgba(54, 162, 235, 1)',
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                scales: {
+                                    y: {
+                                        beginAtZero: true
+                                    }
+                                }
+                            }
+                        });
+                    },
+                    error: function() {
+                        console.error('Failed to fetch dashboard data');
+                    }
                 });
-                $('#topProducts').html(productsList);
-            });
+            }
+
+            fetchData();
+            setInterval(fetchData, 60000); // Refresh every minute
         });
     </script>
 </body>
