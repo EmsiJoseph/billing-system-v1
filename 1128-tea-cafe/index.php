@@ -62,11 +62,12 @@
 
 
   <?php require 'partials/_footer.php'; ?>
+  <?php require 'partials/_loginModal.php'; ?>
 
-  <!-- Optional JavaScript -->
   <script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/popper.min.js" crossorigin="anonymous"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
+
   <script>
     $(document).ready(function() {
       $('.card').hide().fadeIn(1000);
@@ -81,6 +82,9 @@
             'zoom': 1
           }, 400);
         });
+      <?php if (!$loggedin) : ?>
+        $('#loginModal').modal('show');
+      <?php endif; ?>
     });
   </script>
 </body>

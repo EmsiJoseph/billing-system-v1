@@ -83,7 +83,7 @@ function handleCheckout($conn, $userId)
 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $userId = $_SESSION['userId'];
+    $userId = $_SESSION['user']['userId'];
 
     if (isset($_POST['addToCart'])) {
         $itemId = $_POST["itemId"];

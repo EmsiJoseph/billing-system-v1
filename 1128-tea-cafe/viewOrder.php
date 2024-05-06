@@ -266,7 +266,7 @@
             var countdownElements = document.querySelectorAll('.countdown');
             countdownElements.forEach(function(element) {
                 var orderId = element.closest('.order-card').dataset.orderId;
-                var timeLeft = parseInt(element.dataset.timeLeft, 2);
+                var timeLeft = parseInt(element.dataset.timeLeft, 10);
                 var timer = setInterval(function() {
                     if (timeLeft <= 0) {
                         clearInterval(timer);

@@ -1,22 +1,8 @@
 <?php
 session_start();
-
-$_SESSION = array();
-
-if (ini_get("session.use_cookies")) {
-    $params = session_get_cookie_params();
-    setcookie(
-        session_name(),
-        '',
-        time() - 42000,
-        $params["path"],
-        $params["domain"],
-        $params["secure"],
-        $params["httponly"]
-    );
+if (isset($_SESSION['admin'])) {
+    unset($_SESSION['admin']);
 }
-
-session_destroy();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -28,7 +14,7 @@ session_destroy();
     <title>Logging out</title>
     <script>
         setTimeout(function() {
-            window.location.href = "../login.php";
+            window.location.href = "../index.php";
         }, 3000);
     </script>
     <style>
@@ -69,3 +55,4 @@ session_destroy();
 </body>
 
 </html>
+<?php exit; ?>

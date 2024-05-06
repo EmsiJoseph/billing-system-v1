@@ -1,6 +1,6 @@
 <?php
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    include '_sessionStart.php';
+    // include '_sessionStart.php';
     include '_dbconnect.php';
 
     $email = $_POST["email"];
@@ -16,10 +16,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $row = $result->fetch_assoc();
         if ($row['userType'] == 1 && password_verify($password, $row['password'])) {
             session_start();
-            $_SESSION['adminloggedin'] = true;
-            $_SESSION['adminemail'] = $email;
-            $_SESSION['adminuserId'] = $row['userId'];
-            $_SESSION['adminnickname'] = $row['nickname'];
+            $_SESSION['admin'] = [
+                'loggedin' => true,
+                'email' => $email,
+                'userId' => $row['userId'],
+                'nickname' => $row['nickname']
+            ];
+
             header("location: /admin/index.php?loginsuccess=true");
             exit();
         } else {

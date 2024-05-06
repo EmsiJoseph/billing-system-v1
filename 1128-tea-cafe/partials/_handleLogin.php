@@ -18,10 +18,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $row = $result->fetch_assoc();
         if (password_verify($password, $row['password'])) {
             session_start();
-            $_SESSION['loggedin'] = true;
-            $_SESSION['userId'] = $row['userId'];
-            $_SESSION['nickname'] = $row['nickname']; // Fetching and setting the nickname
-
+            $_SESSION['user'] = [
+                'loggedin' => true,
+                'email' => $email,
+                'userId' => $row['userId'],
+                'nickname' => $row['nickname']
+            ];
             header("location: /index.php?loginsuccess=true");
             exit();
         } else {

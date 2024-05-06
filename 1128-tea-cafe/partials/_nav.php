@@ -1,22 +1,20 @@
 <?php
-include 'partials/_sessionStart.php';
 include 'partials/_dbconnect.php';
+session_start();
 
 $systemName = "Default System Name";
 $categories = [];
 $userId = 0;
 $count = 0;
-if (
-  session_status() === PHP_SESSION_NONE
-) {
 
-  session_start();
-}
-if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
+if (isset($_SESSION['user']) && $_SESSION['user']['loggedin'] === true) {
   $loggedin = true;
-  $userId = $_SESSION['userId'];
+  $userId = $_SESSION['user']['userId'];
+  $email = $_SESSION['user']['email'];
+  $nickname = $_SESSION['user']['nickname'];
 } else {
   $loggedin = false;
+  $email = $nickname = '';
 }
 
 if ($result = mysqli_query($conn, "SELECT * FROM `sitedetail`")) {
@@ -76,7 +74,6 @@ if ($loggedin) {
       <li class="nav-item">
         <a class="nav-link" href="about.php">About</a>
       </li>
-
     </ul>
     <a href="viewCart.php" class="btn btn-secondary mx-2" title="My Cart">
       <i class="fas fa-shopping-cart"></i> Cart (<span id="cartCount"><?= $count ?></span>)
@@ -84,7 +81,7 @@ if ($loggedin) {
     <?php if ($loggedin) : ?>
       <ul class="navbar-nav mr-2">
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownProfile" role="button" data-toggle="dropdown">Welcome <?= htmlspecialchars($_SESSION['nickname']) ?></a>
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownProfile" role="button" data-toggle="dropdown">Welcome <?= htmlspecialchars($nickname) ?></a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdownProfile">
             <a class="dropdown-item" href="partials/_logout.php">Logout</a>
           </div>
@@ -95,7 +92,7 @@ if ($loggedin) {
       </div>
     <?php else : ?>
       <button type="button" class="btn btn-success mx-2" data-toggle="modal" data-target="#loginModal">Login</button>
-      <button type="button" the "btn btn-success mx-2" data-toggle="modal" data-target="#signupModal">SignUp</button>
+      <button type="button" class="btn btn-success mx-2" data-toggle="modal" data-target="#signupModal">SignUp</button>
     <?php endif; ?>
   </div>
 </nav>
@@ -103,28 +100,4 @@ if ($loggedin) {
 <?php
 include 'partials/_loginModal.php';
 include 'partials/_signupModal.php';
-
-if (isset($_GET['signupsuccess']) && $_GET['signupsuccess'] === "true") {
-  echo '<div class="alert alert-success alert-dismissible fade show" role="alert">
-          <strong>Success!</strong> You can now login.
-          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
-        </div>';
-} elseif (isset($_GET['signupsuccess']) && $_GET['signupsuccess'] === "false") {
-  echo '<div class="alert alert-warning alert-dismissible fade show" role="alert">
-          <strong>Warning!</strong> ' . htmlspecialchars($_GET['error']) . '
-          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
-        </div>';
-}
-
-if (isset($_GET['loginsuccess']) && $_GET['loginsuccess'] === "true") {
-  echo '<div class="alert alert-success alert-dismissible fade show" role="alert">
-          <strong>Success!</strong> You are logged in
-          <button type="button" the "close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
-        </div>';
-} elseif (isset($_GET['loginsuccess']) && $_GET['loginsuccess'] === "false") {
-  echo '<div class="alert alert-warning alert-dismissible fade show" role="alert">
-          <strong>Warning!</strong> Invalid Credentials
-          <button type="button" the "close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
-        </div>';
-}
 ?>

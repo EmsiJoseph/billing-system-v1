@@ -1,10 +1,14 @@
 <?php
-if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true) {
+session_start();
+
+if (isset($_SESSION['user']) && $_SESSION['user']['loggedin'] === true) {
     $loggedin = true;
-    $userId = $_SESSION['userId'];
-    $email = $_SESSION['email'];
-    $nickname = $_SESSION['nickname'];
+    $userId = $_SESSION['user']['userId'];
+    $email = $_SESSION['user']['email'];
+    $nickname = $_SESSION['user']['nickname'];
 } else {
     $loggedin = false;
     $userId = 0;
+    $email = null;
+    $nickname = null;
 }
