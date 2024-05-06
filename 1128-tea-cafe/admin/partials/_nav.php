@@ -19,7 +19,11 @@
           <div class="nav__list">
             <a href="index.php" class="nav__link nav-home">
               <i class='bx bx-grid-alt nav__icon'></i>
-              <span class="nav__name">Home</span>
+              <span class="nav__name">Dashboard</span>
+            </a>
+            <a href="index.php?page=billing" class="nav__link nav-billing">
+              <i class='bx bx-receipt nav__icon'></i>
+              <span class="nav__name">Billing</span>
             </a>
             <a href="index.php?page=orderManage" class="nav-orderManage nav__link ">
               <i class='bx bx-bar-chart-alt-2 nav__icon'></i>
@@ -27,11 +31,11 @@
             </a>
             <a href="index.php?page=categoryManage" class="nav__link nav-categoryManage">
               <i class='bx bx-folder nav__icon'></i>
-              <span class="nav__name">Category List</span>
+              <span class="nav__name">Categories</span>
             </a>
             <a href="index.php?page=menuManage" class="nav__link nav-menuManage">
               <i class='bx bx-message-square-detail nav__icon'></i>
-              <span class="nav__name">Menu</span>
+              <span class="nav__name">Products</span>
             </a>
             <a href="index.php?page=userManage" class="nav__link nav-userManage">
               <i class='bx bx-user nav__icon'></i>

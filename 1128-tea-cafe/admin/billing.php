@@ -69,6 +69,52 @@ while ($row = $result->fetch_assoc()) {
                 $('#processOrderButton').prop('disabled', inputLength === 0);
 
                 console.log("Input length:", inputLength);
+
+                function fetchData() {
+                    $.ajax({
+                        url: 'partials/_fetchUpdates.php',
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function(data) {
+                            updateOrders(data);
+                        },
+                        error: function() {
+                            console.error('Failed to fetch data');
+                        }
+                    });
+                }
+
+                function updateOrders(data) {
+                    const incomingContainer = $('#incomingOrdersContainer');
+                    const preparingContainer = $('#preparingOrdersContainer');
+                    const readyContainer = $('#readyForPickupContainer');
+
+                    incomingContainer.empty();
+                    preparingContainer.empty();
+                    readyContainer.empty();
+
+                    data.forEach(order => {
+                        const orderElement = `<div class="card mb-3">
+                <div class="card-body">
+                    <h5>Order ID: ${order.orderId}</h5>
+                    <p>Total: PHP ${parseFloat(order.amount).toFixed(2)}</p>
+                    <h3 class="text-center text-${order.orderStatus === '3' ? 'success' : 'primary'}">${order.queueNumber}</h3>
+                </div>
+            </div>`;
+
+                        if (order.orderStatus === '1') {
+                            incomingContainer.append(orderElement);
+                        } else if (order.orderStatus === '2') {
+                            preparingContainer.append(orderElement);
+                        } else if (order.orderStatus === '3') {
+                            readyContainer.append(orderElement);
+                        }
+                    });
+                }
+
+                fetchData();
+
+                setInterval(fetchData, 1000);
             });
         });
     </script>
@@ -109,7 +155,7 @@ while ($row = $result->fetch_assoc()) {
             <br />
             <br />
             <br />
-            <h2>Dashboard</h2>
+            <h2>Order Billing</h2>
             <form action="" method="POST" class="mb-3">
                 <div class="input-group">
                     <input type="text" class="form-control" placeholder="Enter Order ID" name="orderId" id="orderIdInput" style="max-width: 300px;">
@@ -287,19 +333,22 @@ while ($row = $result->fetch_assoc()) {
                     $.ajax({
                         url: 'partials/_updateOrderStatus.php',
                         type: 'POST',
+                        dataType: 'json',
                         data: {
                             orderId: orderId,
                             newStatus: '2'
                         },
                         success: function(response) {
-                            alert('Order has been confirmed and is now being prepared.');
-                            $('#orderDetailsModal').modal('hide');
-                            $('input[name="orderId"]').val('');
-                            $('#orderDetailsModal').find('input').val('');
-                            location.reload();
+                            if (response.success) {
+                                alert(response.message);
+                                $('#orderDetailsModal').modal('hide');
+                                location.reload();
+                            } else {
+                                alert(response.message);
+                            }
                         },
-                        error: function() {
-                            alert('Failed to update order status.');
+                        error: function(xhr, status, error) {
+                            alert('Error contacting the server: ' + xhr.responseText);
                         }
                     });
                 }
