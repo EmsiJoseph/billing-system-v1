@@ -23,7 +23,7 @@ $itemModalSql = "SELECT o.orderId, o.orderDate, o.amount, oi.prodId, oi.size, o.
                  WHERE o.userId = $userId
                  ORDER BY o.orderDate DESC";
 $itemModalResult = mysqli_query($conn, $itemModalSql);
-$orders = []; // Store orders by ID for modal generation
+$orders = [];
 
 while ($itemModalRow = mysqli_fetch_assoc($itemModalResult)) {
     $orderId = $itemModalRow['orderId'];
@@ -86,7 +86,7 @@ foreach ($orders as $order) {
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <?php if (!in_array($order['orderStatus'], [4, 5, 6])) : ?>
+                    <?php if (!in_array($order['orderStatus'], [2, 3, 4, 5, 6])) : ?>
                         <button class='btn btn-danger cancel-order-btn' data-order-id='<?php echo $orderId; ?>'>Cancel Order</button>
                     <?php endif; ?>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

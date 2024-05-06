@@ -186,11 +186,11 @@
                             $statusText = getOrderStatusDescription($order['orderStatus']);
                             if ($order['orderStatus'] == 1) {
                                 echo "<div class='col-md-6 mb-4'>
-                                    <div class='card order-card' data-toggle='modal' data-target='#orderItem" . htmlspecialchars($order['orderId']) . "'>
+                                    <div class='card order-card' data-order-id='" . htmlspecialchars($order['orderId']) . "' data-toggle='modal' data-target='#orderItem" . htmlspecialchars($order['orderId']) . "'>
                                         <div class='card-body'>
                                             <h5 class='card-title'>Order #" . htmlspecialchars($order['orderId']) . "</h5>
                                             <p class='card-text'>Total: PHP " . number_format($order['amount'], 2) . "</p>
-                                                <p class='card-text countdown' data-time-left='$timeLeft'><strong>Time left to claim:</strong> <span>$statusText</span></p>
+                                                <p class='card-text countdown' data-time-left='$timeLeft'><strong>Time left to claim:</strong> <span>00:00</span></p>
                                         </div>
                                     </div>
                                 </div>";
@@ -264,96 +264,42 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var countdownElements = document.querySelectorAll('.countdown');
-            countdownElements.forEach(function(countdown) {
-                var orderId = countdown.closest('.order-card').getAttribute('data-order-id');
-                var timeLeft = parseInt(countdown.dataset.timeLeft, 10);
-                var span = countdown.querySelector('span');
-
-                var timerId = setInterval(function() {
+            countdownElements.forEach(function(element) {
+                var orderId = element.closest('.order-card').dataset.orderId;
+                var timeLeft = parseInt(element.dataset.timeLeft, 2);
+                var timer = setInterval(function() {
                     if (timeLeft <= 0) {
-                        clearInterval(timerId);
-                        span.textContent = '00:00';
+                        clearInterval(timer);
+                        element.innerHTML = '<strong>Order Cancelled';
                         updateOrderStatusOnTimeout(orderId);
                     } else {
                         var minutes = Math.floor(timeLeft / 60);
                         var seconds = timeLeft % 60;
-                        span.textContent = minutes.toString().padStart(2, '0') + ':' + seconds.toString().padStart(2, '0');
+                        element.innerHTML = `<strong>Time left to claim:</strong> ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
                         timeLeft--;
                     }
                 }, 1000);
-                pollOrderStatusUpdates(orderId, timerId);
             });
-        });
 
-        function updateOrderStatusOnTimeout(orderId) {
-            $.ajax({
-                url: '/partials/_checkOrderStatus.php',
-                type: 'POST',
-                data: {
-                    orderId: orderId
-                },
-                success: function(response) {
-                    var status = parseInt(response.orderStatus);
-                    if (!['1', '2', '3'].includes(status)) {
-                        const card = document.querySelector(`[data-order-id='${orderId}']`);
-                        if (card) {
-                            moveToCancelledTab(card, status);
-                        }
-                    }
-                },
-                error: function(error) {
-                    console.error("Failed to update status on timeout", error);
-                }
-            });
-        }
-
-        function moveToCancelledTab(card, status) {
-            if (['4', '5', '6'].includes(status)) {
-                const cancelledTab = document.querySelector('#cancelled .row');
-                if (cancelledTab) {
-                    card.querySelector('.countdown').remove();
-                    cancelledTab.appendChild(card);
-                }
-            }
-        }
-
-        function pollOrderStatusUpdates(orderId, timerId) {
-            setInterval(function() {
+            function updateOrderStatusOnTimeout(orderId) {
+                console.log("Sending AJAX request for order", orderId);
                 $.ajax({
-                    url: '/partials/_checkOrderStatus.php',
+                    url: 'partials/_autoCancelOrder.php',
                     type: 'POST',
                     data: {
                         orderId: orderId
                     },
                     success: function(response) {
-                        var status = parseInt(response.orderStatus);
-                        var statusText = response.statusText;
-                        var orderCard = document.querySelector(`[data-order-id='${orderId}']`);
-                        if (orderCard) {
-                            var statusElement = orderCard.querySelector('.order-status');
-                            if (!statusElement) {
-                                statusElement = document.createElement('p');
-                                statusElement.classList.add('order-status');
-                                orderCard.querySelector('.card-body').appendChild(statusElement);
-                            }
-                            statusElement.textContent = `Status: ${statusText}`;
+                        location.reload();
+                        console.log("Response received:", response);
 
-                            if (!['1', '2', '3'].includes(status)) {
-                                clearInterval(timerId);
-                                var countdownElement = orderCard.querySelector('.countdown');
-                                if (countdownElement) {
-                                    countdownElement.remove();
-                                }
-                                moveToCancelledTab(orderCard, status);
-                            }
-                        }
                     },
-                    error: function(error) {
-                        console.error("Failed to check order status", error);
+                    error: function(xhr) {
+                        console.error("Error updating order status on timeout: " + xhr.responseText);
                     }
                 });
-            }, 5000);
-        }
+            }
+        });
     </script>
 </body>
 

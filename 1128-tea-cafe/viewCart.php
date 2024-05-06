@@ -13,9 +13,21 @@
     <title>Cart</title>
     <link rel="icon" href="img/logo.jpg" type="image/x-icon">
     <style>
-        #cont {
-            min-height: 626px;
+        html,
+        body {
+            height: 100%;
+            margin: 0;
         }
+
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        #cont {
+            flex: 1;
+        }
+
 
         .table {
             width: 100%;
@@ -136,7 +148,7 @@
         </div>
     <?php endif; ?>
     <?php include 'partials/_checkoutModal.php' ?>
-    <?php require 'partials/_footer.php'; ?>
+
     <script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/popper.min.js" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
@@ -213,3 +225,4 @@
 </body>
 
 </html>
+<?php require 'partials/_footer.php'; ?>

@@ -3,10 +3,9 @@ include '_dbconnect.php';
 
 header('Content-Type: application/json');
 
-function getNewQueueNumber($conn)
+$dateToday = (new DateTime("now", new DateTimeZone('Asia/Manila')))->format('Y-m-d');
+function getNewQueueNumber($conn, $dateToday)
 {
-    $today = new DateTime("now", new DateTimeZone('Asia/Manila'));
-    $dateToday = $today->format('Y-m-d');
     $stmt = $conn->prepare("SELECT MAX(queueNumber) as maxQueue FROM queue WHERE dateAdded = ?");
     $stmt->bind_param("s", $dateToday);
     $stmt->execute();
@@ -16,9 +15,9 @@ function getNewQueueNumber($conn)
     return $currentMaxQueue + 1;
 }
 
-function updateAnalytics($orderId, $conn)
+function updateAnalytics($orderId, $conn, $dateToday)
 {
-    $dateToday = (new DateTime("now", new DateTimeZone('Asia/Manila')))->format('Y-m-d');
+
     $orderQuery = "SELECT SUM(price * itemQuantity) AS order_total FROM orderitems WHERE orderId = ?";
     $stmt = $conn->prepare($orderQuery);
     $stmt->bind_param("s", $orderId);
@@ -26,30 +25,45 @@ function updateAnalytics($orderId, $conn)
     $result = $stmt->get_result()->fetch_assoc();
     $orderTotal = $result['order_total'] ?? 0;
 
-    $analyticsUpdate = "INSERT INTO analytics (date, total_orders, daily_revenue) VALUES (?, 1, ?) ON DUPLICATE KEY UPDATE total_orders = total_orders + 1, daily_revenue = daily_revenue + ?";
-    $stmt = $conn->prepare($analyticsUpdate);
-    $stmt->bind_param("sdd", $dateToday, $orderTotal, $orderTotal);
+    $checkQuery = "SELECT * FROM analytics WHERE date = ?";
+    $checkStmt = $conn->prepare($checkQuery);
+    $checkStmt->bind_param("s", $dateToday);
+    $checkStmt->execute();
+    $exists = $checkStmt->get_result()->num_rows > 0;
+    $checkStmt->close();
+
+    if ($exists) {
+        $analyticsUpdate = "UPDATE analytics SET total_orders = total_orders + 1, daily_revenue = daily_revenue + ?, weekly_revenue = weekly_revenue + ?, monthly_revenue = monthly_revenue + ? WHERE date = ?";
+        $stmt = $conn->prepare($analyticsUpdate);
+        $stmt->bind_param("ddds", $orderTotal, $orderTotal, $orderTotal, $dateToday);
+    } else {
+        $analyticsInsert = "INSERT INTO analytics (date, total_orders, daily_revenue, weekly_revenue, monthly_revenue) VALUES (?, 1, ?, ?, ?)";
+        $stmt = $conn->prepare($analyticsInsert);
+        $stmt->bind_param("sddd", $dateToday, $orderTotal, $orderTotal, $orderTotal);
+    }
+
     if (!$stmt->execute()) {
+        $stmt->close();
         return false;
     }
+    $stmt->close();
     return true;
 }
 
 if (isset($_POST['orderId']) && isset($_POST['newStatus'])) {
     $orderId = $_POST['orderId'];
     $newStatus = $_POST['newStatus'];
-    $dateToday = (new DateTime("now", new DateTimeZone('Asia/Manila')))->format('Y-m-d');
 
     $conn->begin_transaction();
 
     try {
-        $analyticsUpdated = updateAnalytics($orderId, $conn);
+        $analyticsUpdated = updateAnalytics($orderId, $conn, $dateToday);
         if (!$analyticsUpdated) {
             throw new Exception("Failed to update analytics.");
         }
 
         if ($newStatus == '2') {
-            $queueNumber = getNewQueueNumber($conn);
+            $queueNumber = getNewQueueNumber($conn, $dateToday);
             $stmt = $conn->prepare("INSERT INTO queue (orderId, queueNumber, dateAdded) VALUES (?, ?, ?)");
             $stmt->bind_param("sis", $orderId, $queueNumber, $dateToday);
             $stmt->execute();

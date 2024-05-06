@@ -12,11 +12,24 @@
         .card {
             margin-top: 20px;
         }
+
+        .input-background {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
     </style>
 </head>
 
 <body>
+    <br>
+    <br>
+    <br>
     <div class="container mt-4">
+        <div class="input-background">
+            <h2>Dashboard</h2>
+        </div>
         <div class="row">
             <div class="col-md-3">
                 <div class="card">
@@ -66,45 +79,49 @@
         $(document).ready(function() {
             function fetchData() {
                 $.ajax({
-                    url: 'dashboard_data.php',
+                    url: 'partials/_dashboardData.php',
                     type: 'GET',
                     dataType: 'json',
-                    success: function(data) {
-                        $('#dailyRevenue').text(`PHP ${parseFloat(data.daily_revenue).toFixed(2)}`);
-                        $('#weeklyRevenue').text(`PHP ${parseFloat(data.weekly_revenue).toFixed(2)}`);
-                        $('#monthlyRevenue').text(`PHP ${parseFloat(data.monthly_revenue).toFixed(2)}`);
-                        $('#totalOrders').text(data.total_orders);
+                    success: function(response) {
+                        if (response.success) {
+                            $('#dailyRevenue').text(`PHP ${parseFloat(response.data.daily_revenue).toFixed(2)}`);
+                            $('#weeklyRevenue').text(`PHP ${parseFloat(response.data.weekly_revenue).toFixed(2)}`);
+                            $('#monthlyRevenue').text(`PHP ${parseFloat(response.data.monthly_revenue).toFixed(2)}`);
+                            $('#totalOrders').text(response.data.total_orders);
 
-                        var ctx = document.getElementById('salesOverTime').getContext('2d');
-                        var salesOverTime = new Chart(ctx, {
-                            type: 'line',
-                            data: {
-                                labels: data.labels,
-                                datasets: [{
-                                    label: 'Revenue Over Time',
-                                    data: data.revenue_over_time,
-                                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                                    borderColor: 'rgba(54, 162, 235, 1)',
-                                    borderWidth: 1
-                                }]
-                            },
-                            options: {
-                                scales: {
-                                    y: {
-                                        beginAtZero: true
+                            var ctx = document.getElementById('salesOverTime').getContext('2d');
+                            var salesOverTime = new Chart(ctx, {
+                                type: 'line',
+                                data: {
+                                    labels: response.data.labels,
+                                    datasets: [{
+                                        label: 'Revenue Over Time',
+                                        data: response.data.revenue_over_time,
+                                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                                        borderColor: 'rgba(54, 162, 235, 1)',
+                                        borderWidth: 1
+                                    }]
+                                },
+                                options: {
+                                    scales: {
+                                        y: {
+                                            beginAtZero: true
+                                        }
                                     }
                                 }
-                            }
-                        });
+                            });
+                        } else {
+                            console.error('Failed to fetch data:', response.message);
+                        }
                     },
-                    error: function() {
-                        console.error('Failed to fetch dashboard data');
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        console.error("Failed to fetch data:", textStatus, jqXHR.responseText);
                     }
                 });
             }
 
             fetchData();
-            setInterval(fetchData, 60000); // Refresh every minute
+            setInterval(fetchData, 10000); // Fetch data every 10 seconds
         });
     </script>
 </body>

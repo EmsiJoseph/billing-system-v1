@@ -104,7 +104,7 @@ foreach ($orders as $order) {
                     },
                     success: function(response) {
                         alert("Order cancelled successfully.");
-                        location.reload(); // Refresh to update the UI
+                        location.reload();
                     },
                     error: function() {
                         alert("Error cancelling order.");

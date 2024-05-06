@@ -76,7 +76,7 @@ if ($row = $result->fetch_assoc()) {
                     <input type="hidden" id="paymentMode" name="paymentMode" value="">
                     <input type="hidden" name="totalPrice" value="<?php echo htmlspecialchars($totalPrice); ?>">
             </div>
-            <p class="text-center"><i class="fas fa-clock"></i> Claim at a store within 20 minutes.</p>
+            <p class="text-center"><i class="fas fa-clock"></i> Claim at a store within 20 minutes. If not claimed, your order will auto cancel</p>
 
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
