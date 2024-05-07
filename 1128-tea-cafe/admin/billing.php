@@ -101,6 +101,32 @@ while ($row = $result->fetch_assoc()) {
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+
+        .receipt-modal-dialog {
+            max-width: 400px;
+            margin: 0.5rem auto;
+        }
+
+        @media print {
+            body * {
+                display: none;
+            }
+
+            .printable,
+            .printable * {
+                display: block;
+            }
+
+            .printable {
+                position: fixed;
+                left: 0;
+                top: 0;
+                margin: 0;
+                padding: 0;
+                width: 100%;
+                height: 100%;
+            }
+        }
     </style>
 
 </head>
@@ -226,7 +252,66 @@ while ($row = $result->fetch_assoc()) {
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-primary" id="confirmButton" disabled onclick="confirmAndPrepareOrder('<?= $orderDetails['orderId'] ?>')">Prepare Order</button>
+                            <button type="button" class="btn btn-primary" id="confirmButton" disabled onclick="showPreviewModal()">Prepare Order</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal" id="previewModal" tabindex="-1" role="dialog" aria-labelledby="previewModalLabel" aria-hidden="true">
+                <div class="modal-dialog receipt-modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="previewModalLabel">Receipt</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body" id="previewModalContent">
+                            <p>Order ID: <span id="previewOrderId"></span></p>
+                            <p>Transaction ID: <span id="previewTransactionId"></span></p>
+                            <p>Date of transaction: <span id="previewDateTime"></span></p>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Item</th>
+                                            <th>Category</th>
+                                            <th>Quantity</th>
+                                            <th>Price</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="orderItemsList">
+                                        <?php
+                                        $itemsSql = "SELECT orderitems.*, prod.prodName, categories.categoryName, prod_sizes.price 
+                                         FROM orderitems 
+                                         JOIN prod ON orderitems.prodId = prod.prodId 
+                                         JOIN categories ON prod.prodCategoryId = categories.categoryId
+                                         JOIN prod_sizes ON prod.prodId = prod_sizes.prodId AND orderitems.size = prod_sizes.size
+                                         WHERE orderitems.orderId = ?";
+                                        $itemsStmt = $conn->prepare($itemsSql);
+                                        $itemsStmt->bind_param("s", $orderId);
+                                        $itemsStmt->execute();
+                                        $itemsResult = $itemsStmt->get_result();
+                                        while ($item = $itemsResult->fetch_assoc()) :
+                                        ?>
+                                            <tr>
+                                                <td><?= $item['prodName'] ?></td>
+                                                <td><?= $item['categoryName'] ?></td>
+                                                <td><?= $item['itemQuantity'] ?></td>
+                                                <td>PHP <?= number_format($item['price'], 2) ?></td>
+                                            </tr>
+                                        <?php endwhile; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <p><strong>Total Amount:</strong> PHP <?= number_format($orderDetails['amount'], 2) ?></p>
+                            <p><strong>Amount Paid:</strong> <span id="amountPaidDisplay"></span></p>
+                            <p><strong>Change Given:</strong> <span id="changeGivenDisplay"></span></p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" onclick="printReceipt();">Print</button>
+                            <button type="button" class="btn btn-primary" onclick="confirmAndPrepareOrder('<?= $orderDetails['orderId'] ?>')">Proceed</button>
                         </div>
                     </div>
                 </div>
@@ -234,7 +319,13 @@ while ($row = $result->fetch_assoc()) {
 
 
 
+
             <script>
+                function updatePaymentDisplay(amountPaid, changeGiven) {
+                    document.getElementById('amountPaidDisplay').textContent = amountPaid.toFixed(2);
+                    document.getElementById('changeGivenDisplay').textContent = changeGiven.toFixed(2);
+                }
+
                 $(document).ready(function() {
                     $('#orderDetailsModal').modal('show');
                 });
@@ -244,6 +335,10 @@ while ($row = $result->fetch_assoc()) {
                     var totalAmount = <?= $orderDetails['amount'] ?>;
                     if (amountPaid >= totalAmount) {
                         var change = amountPaid - totalAmount;
+                        $('#changeGiven').val(change.toFixed(2));
+                        $('#changeGivenDisplay').text(`PHP ${change.toFixed(2)}`);
+                        $('#amountPaidDisplay').text(`PHP ${amountPaid.toFixed(2)}`);
+
                         if (change > 0) {
                             $('#changeContainer').show();
                             $('#changeGiven').val(`PHP ${change.toFixed(2)}`);
@@ -308,6 +403,70 @@ while ($row = $result->fetch_assoc()) {
                             alert('Error contacting the server: ' + xhr.responseText);
                         }
                     });
+                }
+
+                function showPreviewModal() {
+                    $('#previewOrderId').text('<?= $orderDetails['orderId'] ?>');
+                    $('#previewTransactionId').text(generateTransactionId());
+                    $('#previewDateTime').text(new Date().toLocaleString());
+                    $('#previewTotalPrice').text('<?= $orderDetails['amount'] ?>');
+                    $('#previewModal').modal('show');
+                }
+
+
+                function generateTransactionId() {
+                    return Math.random().toString(36).substr(2, 5).toUpperCase();
+                }
+
+                $('#previewModal').on('hidden.bs.modal', function() {
+                    $('#orderDetailsModal').modal('hide');
+                });
+
+                function printReceipt() {
+                    var content = document.getElementById('previewModalContent').innerHTML;
+                    var printWindow = window.open('', '_blank', 'height=600,width=300');
+
+                    printWindow.document.write('<html><head><title>Print Receipt</title>');
+                    printWindow.document.write('<style>');
+                    printWindow.document.write(`
+                    body {
+                        width: 280px; 
+                        font-family: 'Arial'; 
+                        font-size: 12px;
+                    }
+                    .modal-footer, .modal-header, .close { 
+                        display: none; 
+                    }
+                    table {
+                        width: 100%;
+                        border-collapse: collapse;
+                        margin-bottom: 10px;
+                    }
+                    th {
+                        text-align: left;
+                        padding: 4px;
+                        border-bottom: 1px solid #ddd;
+                        font-weight: bold;
+                        font-family: 'Arial'; 
+                        font-size: 12px;
+                    }
+                     td {
+                        text-align: left;
+                        padding: 4px;
+                        border-bottom: 1px solid #ddd;
+                        font-family: 'Arial'; 
+                        font-size: 12px;
+                    }
+                    `);
+                    printWindow.document.write('</style>');
+                    printWindow.document.write('</head><body>');
+                    printWindow.document.write(content);
+                    printWindow.document.write('</body></html>');
+                    printWindow.document.close();
+                    printWindow.focus();
+                    printWindow.onafterprint = function() {
+                        printWindow.close();
+                    };
                 }
             </script>
         <?php endif; ?>
