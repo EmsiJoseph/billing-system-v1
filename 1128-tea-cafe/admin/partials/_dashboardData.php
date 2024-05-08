@@ -36,7 +36,7 @@ try {
         $stmt = $conn->prepare($updateQuery);
         $stmt->bind_param("dddsdd", $orderTotal, $startOfWeek, $orderTotal, $startOfMonth, $orderTotal, $today);
     } else {
-        $insertQuery = "INSERT INTO analytics (date, total_orders, daily_revenue, weekly_revenue, monthly_revenue) VALUES (?, 1, ?, ?, ?)";
+        $insertQuery = "INSERT INTO analytics (date, total_orders, daily_revenue, weekly_revenue, monthly_revenue) VALUES (?, 0, ?, ?, ?)";
         $stmt = $conn->prepare($insertQuery);
         $stmt->bind_param("sddd", $today, $orderTotal, $orderTotal, $orderTotal);
     }
